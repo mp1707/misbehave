@@ -13,6 +13,9 @@ struct Invitation {
 extension SyncCoordinator {
     /// A new zone with a closed, zone-wide share and exactly one one-time participant.
     /// Whoever opens the link first owns it; nobody else can join with it afterwards.
+    ///
+    /// One-time participants need the `com.apple.developer.icloud-extended-share-access` entitlement
+    /// with `InProcessOneTimeLinks`. Without it CloudKit traps in `addParticipant` instead of throwing.
     func createInvitation(role: Role, name: String) async throws -> Invitation {
         let database = container.privateCloudDatabase
         let zoneID = CloudSchema.newZoneID()

@@ -408,6 +408,7 @@
 				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
 				INFOPLIST_FILE = "Config/misbehave-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -429,6 +430,7 @@
 				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
 				INFOPLIST_FILE = "Config/misbehave-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

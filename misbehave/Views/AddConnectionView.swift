@@ -1,4 +1,5 @@
 import MisbehaveKit
+import os
 import SwiftUI
 
 struct AddConnectionView: View {
@@ -100,6 +101,8 @@ struct AddConnectionView: View {
         do {
             created = try await model.createInvitation()
         } catch {
+            Logger(subsystem: "com.mp17.mpapps.misbehave", category: "linking")
+                .error("Creating the invitation failed: \(String(describing: error), privacy: .public)")
             failed = true
         }
     }
