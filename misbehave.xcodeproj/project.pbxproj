@@ -1,0 +1,581 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA0000000000000000000101 /* MisbehaveKit in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000201 /* MisbehaveKit */; };
+		AA0000000000000000000102 /* MisbehaveKit in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000202 /* MisbehaveKit */; };
+		AA0000000000000000000103 /* MisbehaveKit in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000203 /* MisbehaveKit */; };
+		AA0000000000000000000104 /* MisbehaveWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000302 /* MisbehaveWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA0000000000000000000105 /* MisbehaveNotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000303 /* MisbehaveNotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA0000000000000000000401 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000502;
+			remoteInfo = MisbehaveWidget;
+		};
+		AA0000000000000000000402 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000503;
+			remoteInfo = MisbehaveNotificationService;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AA0000000000000000000601 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AA0000000000000000000104 /* MisbehaveWidget.appex in Embed Foundation Extensions */,
+				AA0000000000000000000105 /* MisbehaveNotificationService.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AA0000000000000000000301 /* misbehave.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = misbehave.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000302 /* MisbehaveWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MisbehaveWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000303 /* MisbehaveNotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MisbehaveNotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000311 /* misbehave-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "misbehave-Info.plist"; sourceTree = "<group>"; };
+		AA0000000000000000000312 /* misbehave.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = misbehave.entitlements; sourceTree = "<group>"; };
+		AA0000000000000000000313 /* MisbehaveWidget-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MisbehaveWidget-Info.plist"; sourceTree = "<group>"; };
+		AA0000000000000000000314 /* MisbehaveWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MisbehaveWidget.entitlements; sourceTree = "<group>"; };
+		AA0000000000000000000315 /* MisbehaveNotificationService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MisbehaveNotificationService-Info.plist"; sourceTree = "<group>"; };
+		AA0000000000000000000316 /* MisbehaveNotificationService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MisbehaveNotificationService.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AA0000000000000000000701 /* misbehave */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = misbehave;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000702 /* MisbehaveWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MisbehaveWidget;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000703 /* MisbehaveNotificationService */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MisbehaveNotificationService;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AA0000000000000000000801 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000000000101 /* MisbehaveKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000802 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000000000102 /* MisbehaveKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000803 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000000000103 /* MisbehaveKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA0000000000000000000901 = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000701 /* misbehave */,
+				AA0000000000000000000702 /* MisbehaveWidget */,
+				AA0000000000000000000703 /* MisbehaveNotificationService */,
+				AA0000000000000000000903 /* Config */,
+				AA0000000000000000000902 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000902 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000301 /* misbehave.app */,
+				AA0000000000000000000302 /* MisbehaveWidget.appex */,
+				AA0000000000000000000303 /* MisbehaveNotificationService.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000903 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000311 /* misbehave-Info.plist */,
+				AA0000000000000000000312 /* misbehave.entitlements */,
+				AA0000000000000000000313 /* MisbehaveWidget-Info.plist */,
+				AA0000000000000000000314 /* MisbehaveWidget.entitlements */,
+				AA0000000000000000000315 /* MisbehaveNotificationService-Info.plist */,
+				AA0000000000000000000316 /* MisbehaveNotificationService.entitlements */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AA0000000000000000000501 /* misbehave */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000B01 /* Build configuration list for PBXNativeTarget "misbehave" */;
+			buildPhases = (
+				AA0000000000000000000A01 /* Sources */,
+				AA0000000000000000000801 /* Frameworks */,
+				AA0000000000000000000A11 /* Resources */,
+				AA0000000000000000000601 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA0000000000000000000411 /* PBXTargetDependency */,
+				AA0000000000000000000412 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA0000000000000000000701 /* misbehave */,
+			);
+			name = misbehave;
+			packageProductDependencies = (
+				AA0000000000000000000201 /* MisbehaveKit */,
+			);
+			productName = misbehave;
+			productReference = AA0000000000000000000301 /* misbehave.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA0000000000000000000502 /* MisbehaveWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000B02 /* Build configuration list for PBXNativeTarget "MisbehaveWidget" */;
+			buildPhases = (
+				AA0000000000000000000A02 /* Sources */,
+				AA0000000000000000000802 /* Frameworks */,
+				AA0000000000000000000A12 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AA0000000000000000000702 /* MisbehaveWidget */,
+			);
+			name = MisbehaveWidget;
+			packageProductDependencies = (
+				AA0000000000000000000202 /* MisbehaveKit */,
+			);
+			productName = MisbehaveWidget;
+			productReference = AA0000000000000000000302 /* MisbehaveWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		AA0000000000000000000503 /* MisbehaveNotificationService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000B03 /* Build configuration list for PBXNativeTarget "MisbehaveNotificationService" */;
+			buildPhases = (
+				AA0000000000000000000A03 /* Sources */,
+				AA0000000000000000000803 /* Frameworks */,
+				AA0000000000000000000A13 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AA0000000000000000000703 /* MisbehaveNotificationService */,
+			);
+			name = MisbehaveNotificationService;
+			packageProductDependencies = (
+				AA0000000000000000000203 /* MisbehaveKit */,
+			);
+			productName = MisbehaveNotificationService;
+			productReference = AA0000000000000000000303 /* MisbehaveNotificationService.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					AA0000000000000000000501 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					AA0000000000000000000502 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					AA0000000000000000000503 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = AA0000000000000000000B00 /* Build configuration list for PBXProject "misbehave" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				de,
+				Base,
+			);
+			mainGroup = AA0000000000000000000901;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA0000000000000000000D01 /* XCLocalSwiftPackageReference "MisbehaveKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AA0000000000000000000902 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA0000000000000000000501 /* misbehave */,
+				AA0000000000000000000502 /* MisbehaveWidget */,
+				AA0000000000000000000503 /* MisbehaveNotificationService */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AA0000000000000000000A11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000A12 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000A13 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA0000000000000000000A01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000A02 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000A03 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA0000000000000000000411 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000502 /* MisbehaveWidget */;
+			targetProxy = AA0000000000000000000401 /* PBXContainerItemProxy */;
+		};
+		AA0000000000000000000412 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000503 /* MisbehaveNotificationService */;
+			targetProxy = AA0000000000000000000402 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AA0000000000000000000C01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = PP2LXGF5L3;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000C02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = PP2LXGF5L3;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AA0000000000000000000C11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
+				INFOPLIST_FILE = "Config/misbehave-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AA0000000000000000000C12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
+				INFOPLIST_FILE = "Config/misbehave-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		AA0000000000000000000C21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/MisbehaveWidget.entitlements;
+				INFOPLIST_FILE = "Config/MisbehaveWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000C22 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/MisbehaveWidget.entitlements;
+				INFOPLIST_FILE = "Config/MisbehaveWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		AA0000000000000000000C31 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/MisbehaveNotificationService.entitlements;
+				INFOPLIST_FILE = "Config/MisbehaveNotificationService-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave.notificationservice;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000C32 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/MisbehaveNotificationService.entitlements;
+				INFOPLIST_FILE = "Config/MisbehaveNotificationService-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = misbehave;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mp17.mpapps.misbehave.notificationservice;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AA0000000000000000000B00 /* Build configuration list for PBXProject "misbehave" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000C01 /* Debug */,
+				AA0000000000000000000C02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000000000B01 /* Build configuration list for PBXNativeTarget "misbehave" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000C11 /* Debug */,
+				AA0000000000000000000C12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000000000B02 /* Build configuration list for PBXNativeTarget "MisbehaveWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000C21 /* Debug */,
+				AA0000000000000000000C22 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000000000B03 /* Build configuration list for PBXNativeTarget "MisbehaveNotificationService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000C31 /* Debug */,
+				AA0000000000000000000C32 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA0000000000000000000D01 /* XCLocalSwiftPackageReference "MisbehaveKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = MisbehaveKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA0000000000000000000201 /* MisbehaveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MisbehaveKit;
+		};
+		AA0000000000000000000202 /* MisbehaveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MisbehaveKit;
+		};
+		AA0000000000000000000203 /* MisbehaveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MisbehaveKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = AA0000000000000000000001 /* Project object */;
+}

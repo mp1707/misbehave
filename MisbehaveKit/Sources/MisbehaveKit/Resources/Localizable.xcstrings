@@ -1,0 +1,55 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "partner.fallback" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dein Partner" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your partner" } }
+      }
+    },
+    "push.changed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine %@-Punkte haben sich geändert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your %@ points changed" } }
+      }
+    },
+    "push.line.changed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@-Punkte geändert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ points changed" } }
+      }
+    },
+    "push.line.one" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ %3$@-Punkt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ %3$@ point" } }
+      }
+    },
+    "push.line.other" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ %3$@-Punkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ %3$@ points" } }
+      }
+    },
+    "push.received.one" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast %1$@ %2$@-Punkt erhalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You received %1$@ %2$@ point" } }
+      }
+    },
+    "push.received.other" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast %1$@ %2$@-Punkte erhalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You received %1$@ %2$@ points" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
