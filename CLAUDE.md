@@ -8,7 +8,7 @@ iPhone app for couples. Two people link their iPhones and give each other points
 - It is a cozy little toy, not a utility: **girls are cats 🐱, boys are dogs 🐶, and everyone is pink** (never blue for boys). Mascots are emoji; no image assets.
 - Not in scope for v1: rewards, streaks, a history UI, iPad/Mac, more than two people per connection.
 
-Bundle ID `com.mp17.mpapps.misbehave`, iPhone only, iOS 18+, English and German. Original plan (German, working title "Goodgirl/Goodboy"): https://claude.ai/code/artifact/c22d5ca8-3c7b-40b4-be29-318d8353497c (a Claude Doc; read it with the docs connector).
+Bundle ID `com.mp17.mpapps.misbehave`, iPhone only, iOS 18+, English only (no translations and no language switch for now). Original plan (German, working title "Goodgirl/Goodboy"): https://claude.ai/code/artifact/c22d5ca8-3c7b-40b4-be29-318d8353497c (a Claude Doc; read it with the docs connector).
 
 ## Working mode
 
@@ -96,7 +96,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 - The simulator never shows the picture attached to a notification (its QuickLook has no extension for it; SpringBoard logs "Was unable to generate thumbnail"). The attachment is fine; look at it on a real iPhone.
 - Taps sent to the simulator by the tooling land two to three seconds late. Tap once, wait, then take the screenshot; a second tap is a second tap.
 - A debug build on Marco's iPhone talks to the CloudKit **Development** environment and replaces the TestFlight install (same bundle ID, Production data on the device). Avoid it while he is testing with TestFlight; use the simulator for UI and TestFlight for CloudKit flows.
-- Strings: every user-facing string needs a German entry in the target's `Localizable.xcstrings` (keys are the English text). After a build, compare against the compiler's `*.stringsdata` in DerivedData to find missing keys. `push.neutral.body` is used only by CloudKit and looks unused.
+- Strings: the app is English only, on every device language. The `Localizable.xcstrings` catalogs stay (keys are the English text) but hold no translations; don't add any unless asked. Only keys that are not their own text carry a value: `push.neutral.body` in the app (used only by CloudKit, so it looks unused) and the `push.*`, `mood.*` and `partner.fallback` keys in the package.
 
 ## Release to TestFlight
 

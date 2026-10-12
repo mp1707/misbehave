@@ -2,94 +2,31 @@
   "sourceLanguage" : "en",
   "strings" : {
     "Choose whose points the widget shows." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wähle, wessen Punkte das Widget zeigt."
-          }
-        }
-      }
+
     },
     "Connection" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbindung"
-          }
-        }
-      }
+
     },
     "Disconnected" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Getrennt"
-          }
-        }
-      }
+
     },
     "Hold to choose another connection." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gedrückt halten, um eine andere Verbindung zu wählen."
-          }
-        }
-      }
+
     },
     "No connection" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Verbindung"
-          }
-        }
-      }
+
     },
     "Open misbehave to connect." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Öffne misbehave, um dich zu verbinden."
-          }
-        }
-      }
+
     },
     "Shows your points from one connection." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt deine Punkte aus einer Verbindung."
-          }
-        }
-      }
+
     },
     "You" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du"
-          }
-        }
-      }
+
     },
     "Your points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Punkte"
-          }
-        }
-      }
+
     }
   },
   "version" : "1.0"

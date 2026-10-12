@@ -2,1244 +2,376 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@ ended your connection. Its points are gone on both phones." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ hat eure Verbindung beendet. Die Punkte sind auf beiden iPhones gelöscht."
-          }
-        }
-      }
+
     },
     "%@ point" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@-Punkt"
-          }
-        }
-      }
+
     },
     "%@ points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@-Punkte"
-          }
-        }
-      }
+
     },
     "%@'s %@ points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%2$@-Punkte von %1$@"
-          }
-        }
-      }
+
     },
     "%@'s %@ points: %lld" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%2$@-Punkte von %1$@: %3$lld"
-          }
-        }
-      }
+
     },
     "%@'s points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Punkte von %@"
-          }
-        }
-      }
+
     },
     "%lld new, %lld failed" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld neu, %2$lld fehlgeschlagen"
-          }
-        }
-      }
+
     },
     "Add connection" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbindung hinzufügen"
-          }
-        }
-      }
+
     },
     "Add demo connection" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo-Verbindung hinzufügen"
-          }
-        }
-      }
+
     },
     "All connections end for you and your partners, and every point is deleted. This can't be undone." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle Verbindungen enden für dich und deine Partner, und jeder Punkt wird gelöscht. Das lässt sich nicht rückgängig machen."
-          }
-        }
-      }
+
     },
     "All five need a green check for notifications to arrive while the app is closed." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle fünf brauchen einen grünen Haken, damit Mitteilungen bei geschlossener App ankommen."
-          }
-        }
-      }
+
     },
     "Allow notifications" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen erlauben"
-          }
-        }
-      }
+
     },
     "Allow notifications to hear about it the moment your partner gives or takes a point." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erlaube Mitteilungen, um sofort zu erfahren, wenn dein Partner dir einen Punkt gibt oder abzieht."
-          }
-        }
-      }
+
     },
     "Available" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verfügbar"
-          }
-        }
-      }
+
     },
     "Cancel" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abbrechen"
-          }
-        }
-      }
+
     },
     "Cancel invitation" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladung zurückziehen"
-          }
-        }
-      }
+
     },
     "Cancel this invitation?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladung zurückziehen?"
-          }
-        }
-      }
+
     },
     "Check again" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erneut prüfen"
-          }
-        }
-      }
+
     },
     "Connecting…" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbinden …"
-          }
-        }
-      }
+
     },
     "Connection ended" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbindung beendet"
-          }
-        }
-      }
+
     },
     "Continue" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weiter"
-          }
-        }
-      }
+
     },
     "Couldn't connect" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbinden fehlgeschlagen"
-          }
-        }
-      }
+
     },
     "Create a link and send it to your partner." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erstelle einen Link und schick ihn deinem Partner."
-          }
-        }
-      }
+
     },
     "Create invitation link" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladungslink erstellen"
-          }
-        }
-      }
+
     },
     "Delete all data" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle Daten löschen"
-          }
-        }
-      }
+
     },
     "Delete all data?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle Daten löschen?"
-          }
-        }
-      }
+
     },
     "Delete everything" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alles löschen"
-          }
-        }
-      }
+
     },
     "Deleted on this iPhone" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf diesem iPhone gelöscht"
-          }
-        }
-      }
+
     },
     "Demo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo"
-          }
-        }
-      }
+
     },
     "Demo partner" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo-Partner"
-          }
-        }
-      }
+
     },
     "Diagnostics" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diagnose"
-          }
-        }
-      }
+
     },
     "Disconnect" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trennen"
-          }
-        }
-      }
+
     },
     "Disconnect from %@?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verbindung mit %@ trennen?"
-          }
-        }
-      }
+
     },
     "Disconnect removes one connection with all its points for both of you. \"Delete all data\" in Settings removes everything." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "„Trennen“ entfernt eine Verbindung mit all ihren Punkten für euch beide. „Alle Daten löschen“ in den Einstellungen entfernt alles."
-          }
-        }
-      }
+
     },
     "Dismiss" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausblenden"
-          }
-        }
-      }
+
     },
     "Don't miss the moment" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Verpass den Moment nicht"
-          }
-        }
-      }
+
     },
     "Done" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fertig"
-          }
-        }
-      }
+
     },
     "Ends every connection and removes your profile and all points from this iPhone and from iCloud." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beendet jede Verbindung und entfernt dein Profil und alle Punkte von diesem iPhone und aus iCloud."
-          }
-        }
-      }
+
     },
     "Give a point" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Punkt geben"
-          }
-        }
-      }
+
     },
     "Give a point from the other iPhone while this app is closed, then open this page. The times show how far the push got." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gib vom anderen iPhone einen Punkt, während diese App geschlossen ist, und öffne dann diese Seite. Die Zeiten zeigen, wie weit der Push gekommen ist."
-          }
-        }
-      }
+
     },
     "Give each other points. Take them away again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gebt euch gegenseitig Punkte. Und zieht sie wieder ab."
-          }
-        }
-      }
+
     },
     "How to delete it" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "So löschst du es"
-          }
-        }
-      }
+
     },
     "Invitation" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladung"
-          }
-        }
-      }
+
     },
     "Invitation sent" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladung verschickt"
-          }
-        }
-      }
+
     },
     "Invite your partner" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lade deinen Partner ein"
-          }
-        }
-      }
+
     },
     "Invite your partner with a link, or look around with a demo partner first." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lade deinen Partner per Link ein oder sieh dich erst mit einem Demo-Partner um."
-          }
-        }
-      }
+
     },
     "Know right away" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sofort Bescheid wissen"
-          }
-        }
-      }
+
     },
     "Last background sync" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzter Sync im Hintergrund"
-          }
-        }
-      }
+
     },
     "Last fallback notification" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzte Ersatz-Mitteilung"
-          }
-        }
-      }
+
     },
     "Last push processed" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzter Push verarbeitet"
-          }
-        }
-      }
+
     },
     "Last sync" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzter Sync"
-          }
-        }
-      }
+
     },
     "Last wake-up by push" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zuletzt per Push geweckt"
-          }
-        }
-      }
+
     },
     "Later" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Später"
-          }
-        }
-      }
+
     },
     "Let's keep score. Open this on your iPhone to connect with me on misbehave." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lass uns Punkte zählen. Öffne den Link auf deinem iPhone, um dich in misbehave mit mir zu verbinden."
-          }
-        }
-      }
+
     },
     "More" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mehr"
-          }
-        }
-      }
+
     },
     "Name" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Name"
-          }
-        }
-      }
+
     },
     "Never" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie"
-          }
-        }
-      }
+
     },
     "New connection" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Verbindung"
-          }
-        }
-      }
+
     },
     "New points stay on this iPhone until there's room in iCloud again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Punkte bleiben auf diesem iPhone, bis in iCloud wieder Platz ist."
-          }
-        }
-      }
+
     },
     "No connection yet" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noch keine Verbindung"
-          }
-        }
-      }
+
     },
     "Not asked yet" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noch nicht gefragt"
-          }
-        }
-      }
+
     },
     "Not available" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht verfügbar"
-          }
-        }
-      }
+
     },
     "Notification permission" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen erlaubt"
-          }
-        }
-      }
+
     },
     "Notifications" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen"
-          }
-        }
-      }
+
     },
     "Notifications are off" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen sind aus"
-          }
-        }
-      }
+
     },
     "OK" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "OK"
-          }
-        }
-      }
+
     },
     "Off" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aus"
-          }
-        }
-      }
+
     },
     "On" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An"
-          }
-        }
-      }
+
     },
     "On your iPhone and in iCloud. Each connection lives in the iCloud account of the person who sent the invitation and is shared only with the one partner who accepted it." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf deinem iPhone und in iCloud. Jede Verbindung liegt im iCloud-Account der Person, die eingeladen hat, und ist nur mit dem einen Partner geteilt, der die Einladung angenommen hat."
-          }
-        }
-      }
+
     },
     "Open Settings" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einstellungen öffnen"
-          }
-        }
-      }
+
     },
     "Privacy" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datenschutz"
-          }
-        }
-      }
+
     },
     "Push registration" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Push-Registrierung"
-          }
-        }
-      }
+
     },
     "Remove demo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo entfernen"
-          }
-        }
-      }
+
     },
     "Remove the demo connection?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo-Verbindung entfernen?"
-          }
-        }
-      }
+
     },
     "Role" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rolle"
-          }
-        }
-      }
+
     },
     "Saved on this iPhone. Your partner gets it as soon as iCloud is reachable." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Auf diesem iPhone gespeichert. Dein Partner bekommt es, sobald iCloud erreichbar ist."
-          }
-        }
-      }
+
     },
     "Send invitation" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einladung senden"
-          }
-        }
-      }
+
     },
     "Send it to your partner. It works exactly once, so nobody else can join with it." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schick ihn deinem Partner. Er funktioniert genau einmal, niemand sonst kann damit beitreten."
-          }
-        }
-      }
+
     },
     "Send the invitation link to your partner. It only works on their iPhone." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schick den Einladungslink deinem Partner. Er funktioniert nur auf dessen iPhone."
-          }
-        }
-      }
+
     },
     "Send the link again" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Link noch einmal senden"
-          }
-        }
-      }
+
     },
     "Settings" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einstellungen"
-          }
-        }
-      }
+
     },
     "Setup" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einrichtung"
-          }
-        }
-      }
+
     },
     "Sign in to iCloud in the Settings app to connect with a partner." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Melde dich in der Einstellungen-App bei iCloud an, um dich mit einem Partner zu verbinden."
-          }
-        }
-      }
+
     },
     "Status" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Status"
-          }
-        }
-      }
+
     },
     "Subscription, accepted invitations" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abo, angenommene Einladungen"
-          }
-        }
-      }
+
     },
     "Subscription, own invitations" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abo, eigene Einladungen"
-          }
-        }
-      }
+
     },
     "Take a point away" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Punkt abziehen"
-          }
-        }
-      }
+
     },
     "That didn't work. Check your internet connection and iCloud, then try again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das hat nicht geklappt. Prüfe Internetverbindung und iCloud und versuch es noch einmal."
-          }
-        }
-      }
+
     },
     "That's your own link" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das ist dein eigener Link"
-          }
-        }
-      }
+
     },
     "The demo partner mirrors what you do. Nothing here leaves your iPhone." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Demo-Partner macht dir alles nach. Nichts davon verlässt dein iPhone."
-          }
-        }
-      }
+
     },
     "The invitation may have been used already, or iCloud isn't reachable. Ask for a new link and try again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Einladung wurde vielleicht schon verwendet, oder iCloud ist nicht erreichbar. Bitte um einen neuen Link und versuch es noch einmal."
-          }
-        }
-      }
+
     },
     "The link stops working." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Link funktioniert dann nicht mehr."
-          }
-        }
-      }
+
     },
     "The link was created on another device and can only be sent from there." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Link wurde auf einem anderen Gerät erstellt und kann nur von dort verschickt werden."
-          }
-        }
-      }
+
     },
     "The link works exactly once. As soon as your partner opens it on their iPhone, you're connected." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Link funktioniert genau einmal. Sobald dein Partner ihn auf seinem iPhone öffnet, seid ihr verbunden."
-          }
-        }
-      }
+
     },
     "The points of this connection are deleted for both of you. Your other connections stay as they are." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Punkte dieser Verbindung werden für euch beide gelöscht. Deine anderen Verbindungen bleiben, wie sie sind."
-          }
-        }
-      }
+
     },
     "This is what your points are called. You can change it later." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "So heißen deine Punkte. Du kannst das später ändern."
-          }
-        }
-      }
+
     },
     "Try the demo" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Demo ausprobieren"
-          }
-        }
-      }
+
     },
     "Try the demo instead" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stattdessen die Demo ausprobieren"
-          }
-        }
-      }
+
     },
     "Version" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version"
-          }
-        }
-      }
+
     },
     "Waiting for your partner" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Warten auf deinen Partner"
-          }
-        }
-      }
+
     },
     "Waiting for your partner to open the link." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Partner muss den Link noch öffnen."
-          }
-        }
-      }
+
     },
     "What happened" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was passiert ist"
-          }
-        }
-      }
+
     },
     "What is stored" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was gespeichert wird"
-          }
-        }
-      }
+
     },
     "When your partner gives you a point, your iPhone tells you right away and the widget follows. Without notifications you only see it when you open the app." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn dein Partner dir einen Punkt gibt, meldet sich dein iPhone sofort und das Widget zieht nach. Ohne Mitteilungen siehst du es erst, wenn du die App öffnest."
-          }
-        }
-      }
+
     },
     "Where it is stored" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wo es gespeichert wird"
-          }
-        }
-      }
+
     },
     "Which one are you?" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was bist du?"
-          }
-        }
-      }
+
     },
     "Who can see it" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wer es sehen kann"
-          }
-        }
-      }
+
     },
     "You" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du"
-          }
-        }
-      }
+
     },
     "You and the partner of that connection. The developer has no server and cannot see any of it. There is no tracking, no advertising and no analytics." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du und der Partner dieser Verbindung. Der Entwickler betreibt keinen Server und kann nichts davon sehen. Es gibt kein Tracking, keine Werbung und keine Analyse."
-          }
-        }
-      }
+
     },
     "You'll be %@ in this connection." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In dieser Verbindung bist du %@."
-          }
-        }
-      }
+
     },
     "You'll see new points when you open the app. You can turn notifications on in Settings." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Punkte siehst du, wenn du die App öffnest. Mitteilungen kannst du in den Einstellungen einschalten."
-          }
-        }
-      }
+
     },
     "You're connected. This connection keeps its own score, separate from all others." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ihr seid verbunden. Diese Verbindung zählt für sich, getrennt von allen anderen."
-          }
-        }
-      }
+
     },
     "Your %@ points" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine %@-Punkte"
-          }
-        }
-      }
+
     },
     "Your link is ready" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Link ist fertig"
-          }
-        }
-      }
+
     },
     "Your name (optional)" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Name (optional)"
-          }
-        }
-      }
+
     },
     "Your partner ended a connection. Its points are gone on both phones." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Partner hat eine Verbindung beendet. Die Punkte sind auf beiden iPhones gelöscht."
-          }
-        }
-      }
+
     },
     "Your partner opens it on their iPhone with misbehave installed." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Partner öffnet ihn auf seinem iPhone, auf dem misbehave installiert ist."
-          }
-        }
-      }
+
     },
     "Your partner sees this name." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Partner sieht diesen Namen."
-          }
-        }
-      }
+
     },
     "Your partners see the name. The role applies to connections you add from now on." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Partner sehen den Namen. Die Rolle gilt für Verbindungen, die du ab jetzt hinzufügst."
-          }
-        }
-      }
+
     },
     "Your role, the name you entered and one entry for every point you give or take away. Nothing else." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deine Rolle, der eingegebene Name und ein Eintrag für jeden Punkt, den du gibst oder abziehst. Sonst nichts."
-          }
-        }
-      }
+
     },
     "given by %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "vergeben von %@"
-          }
-        }
-      }
+
     },
     "iCloud" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud"
-          }
-        }
-      }
+
     },
     "iCloud isn't reachable right now. The data in iCloud is removed as soon as the app is open and online again." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud ist gerade nicht erreichbar. Die Daten in iCloud werden entfernt, sobald die App wieder geöffnet und online ist."
-          }
-        }
-      }
+
     },
     "iCloud storage is full" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud-Speicher ist voll"
-          }
-        }
-      }
+
     },
     "push.neutral.body" : {
       "extractionState" : "manual",
@@ -1248,12 +380,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You have new points 🐾"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Du hast neue Punkte 🐾"
           }
         }
       }

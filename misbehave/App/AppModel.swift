@@ -51,9 +51,20 @@ final class AppModel {
     }
 
     func start() {
+        renameDemoPartner()
         sync.start()
         accountObserver = NotificationCenter.default.addObserver(forName: .CKAccountChanged, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in await self?.refreshAccountStatus() }
+        }
+    }
+
+    /// A demo connection made while the app still spoke German keeps the German name in the store.
+    private func renameDemoPartner() {
+        let name = String(localized: "Demo partner")
+        guard let demo = connection(Self.demoID), demo.partnerName != name else { return }
+        mutate { state in
+            guard let index = state.connections.firstIndex(where: { $0.id == Self.demoID }) else { return }
+            state.connections[index].partnerName = name
         }
     }
 
