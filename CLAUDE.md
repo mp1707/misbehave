@@ -102,7 +102,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **3**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **4**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
