@@ -1,6 +1,76 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "mood.goodboy.best" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Allerbeste" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best boy ever" } }
+      }
+    },
+    "mood.goodboy.fresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wartet auf Leckerlis" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Waiting for treats" } }
+      }
+    },
+    "mood.goodboy.good" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wedelt schon fröhlich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tail is wagging" } }
+      }
+    },
+    "mood.goodboy.great" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wer ist ein Feiner?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Who's a good boy?" } }
+      }
+    },
+    "mood.goodboy.naughty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ab ins Körbchen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "In the doghouse" } }
+      }
+    },
+    "mood.goodgirl.best" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einfach purrfekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simply purrfect" } }
+      }
+    },
+    "mood.goodgirl.fresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wartet auf Leckerlis" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Waiting for treats" } }
+      }
+    },
+    "mood.goodgirl.good" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schnurrt leise" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Purring softly" } }
+      }
+    },
+    "mood.goodgirl.great" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schnurrt ganz laut" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Purring loudly" } }
+      }
+    },
+    "mood.goodgirl.naughty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Freches Kätzchen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Naughty kitty" } }
+      }
+    },
     "partner.fallback" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -5,6 +5,7 @@ iPhone app for couples. Two people link their iPhones and give each other points
 - Each person picks a role, `goodgirl` or `goodboy` (shown untranslated). It names the points they collect.
 - A person can have several connections; each has its own score, strictly separate.
 - Free, no accounts, no own server, no ads, no tracking, no third-party code.
+- It is a cozy little toy, not a utility: **girls are cats 🐱, boys are dogs 🐶, and everyone is pink** (never blue for boys). Mascots are emoji; no image assets.
 - Not in scope for v1: rewards, streaks, a history UI, iPad/Mac, more than two people per connection.
 
 Bundle ID `com.mp17.mpapps.misbehave`, iPhone only, iOS 18+, English and German. Original plan (German, working title "Goodgirl/Goodboy"): https://claude.ai/code/artifact/c22d5ca8-3c7b-40b4-be29-318d8353497c (a Claude Doc; read it with the docs connector).
@@ -27,12 +28,19 @@ Everything is Swift and Apple frameworks, Swift 6 language mode.
 | Part | Path | Role |
 | --- | --- | --- |
 | App | `misbehave/` | SwiftUI UI, `AppModel` (single source of truth), `SyncCoordinator` (CloudKit) |
-| Widget | `MisbehaveWidget/` | Score of one connection, chosen per widget via App Intent |
-| Notification extension | `MisbehaveNotificationService/` | Rewrites the neutral push into the real text |
-| Shared package | `MisbehaveKit/` | Models, local store, CloudKit schema, push wording, tests |
+| Widget | `MisbehaveWidget/` | Score of one connection, chosen per widget via App Intent; small, medium (both scores) and lock screen |
+| Notification extension | `MisbehaveNotificationService/` | Rewrites the neutral push into the real text and adds the mascot picture |
+| Shared package | `MisbehaveKit/` | Models, local store, CloudKit schema, push wording, look (colours, mascots, moods), tests |
 | Config | `Config/` | Info.plists, entitlements, `ExportOptions.plist` |
 
 The Xcode project uses file-system-synchronized folders: a file added to a target's folder is in the target. Don't put Info.plists or entitlements in those folders.
+
+### Look
+
+- `MisbehaveKit/RoleStyle.swift`: the two pink gradients, the `Cozy` colours (cream background, cards, plum ink) and the paw pattern. Shared by app and widget.
+- `MisbehaveKit/Mood.swift`: a score maps to a mood, which picks the mascot's face, a badge and a line like "Purring loudly". Decoration only.
+- `misbehave/Views/Theme.swift`: stickers, cards, button styles, the emoji burst and the other little animations. Screens are built from these; don't style a screen from scratch.
+- Forms keep system colours. `.ink()` goes on text groups only: on a container it takes the tint from plain buttons and the red from destructive ones.
 
 ### Local state
 
@@ -64,7 +72,7 @@ Container `iCloud.com.mp17.mpapps.misbehave`. **A connection is a record zone** 
 
 1. Two `CKDatabaseSubscription`s filtered by record type: private database on `PointFromParticipant`, shared on `PointFromOwner`. So only the partner's points trigger a push. They are re-saved on every launch.
 2. The push carries a neutral localized text (`push.neutral.body`), `mutable-content` and `content-available`.
-3. The notification extension fetches the new points with its own change tokens, writes them to the inbox, sets the real text and reloads the widget.
+3. The notification extension fetches the new points with its own change tokens, writes them to the inbox, sets the real text (ending in the mascot's reaction, e.g. 😻 or 🐶🦴), attaches a small picture of the mascot with the points (`NotificationSticker`) and reloads the widget.
 4. `content-available` also wakes the app, which syncs and reloads the widget.
 5. Fallback: if points arrive through a background sync and no remote notification was delivered, the app posts a local one.
 6. While the app is in the foreground, real pushes show no banner (the score changes on screen); only the demo connection's does.
@@ -85,6 +93,8 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 ```
 
 - The simulator has no iCloud account: only onboarding, the demo connection, settings and the widget can be checked there. Anything involving a second person needs two iPhones with two iCloud accounts.
+- The simulator never shows the picture attached to a notification (its QuickLook has no extension for it; SpringBoard logs "Was unable to generate thumbnail"). The attachment is fine; look at it on a real iPhone.
+- Taps sent to the simulator by the tooling land two to three seconds late. Tap once, wait, then take the screenshot; a second tap is a second tap.
 - A debug build on Marco's iPhone talks to the CloudKit **Development** environment and replaces the TestFlight install (same bundle ID, Production data on the device). Avoid it while he is testing with TestFlight; use the simulator for UI and TestFlight for CloudKit flows.
 - Strings: every user-facing string needs a German entry in the target's `Localizable.xcstrings` (keys are the English text). After a build, compare against the compiler's `*.stringsdata` in DerivedData to find missing keys. `push.neutral.body` is used only by CloudKit and looks unused.
 
@@ -123,6 +133,6 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 
 ## Open
 
-- Not yet confirmed on two real iPhones: that the visible push arrives and the widget follows once notifications are allowed (build 3).
+- Not yet seen on a real iPhone: the mascot picture next to the notification text, and the medium widget on the home screen (its layout was only checked as a copy inside the app).
 - Never exercised on real devices: the owner detecting that the partner left (read from the share's participant list), "delete all data" against iCloud, account switch.
 - Before the App Store: privacy policy and support URLs, store page, review notes with a pairing video, age rating, final icon (the current one is a placeholder).

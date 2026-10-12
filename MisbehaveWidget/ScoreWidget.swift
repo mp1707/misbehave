@@ -12,11 +12,13 @@ struct ConnectionEntity: AppEntity {
     var id: String
     var name: String
     var role: String
+    var symbolName: String
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(
             title: LocalizedStringResource(stringLiteral: name),
-            subtitle: LocalizedStringResource(stringLiteral: role)
+            subtitle: LocalizedStringResource(stringLiteral: role),
+            image: .init(systemName: symbolName)
         )
     }
 
@@ -24,6 +26,7 @@ struct ConnectionEntity: AppEntity {
         id = connection.id
         name = connection.partnerDisplayName
         role = connection.myRole.label
+        symbolName = connection.myRole.symbolName
     }
 }
 
@@ -56,8 +59,20 @@ struct SelectConnectionIntent: WidgetConfigurationIntent {
 // MARK: Timeline
 
 struct ScoreEntry: TimelineEntry {
+    struct Score: Equatable {
+        var id: String
+        var partner: String
+        var role: Role
+        var score: Int
+        var partnerRole: Role
+        var partnerScore: Int
+
+        var mood: Mood { Mood(score: score) }
+        var partnerMood: Mood { Mood(score: partnerScore) }
+    }
+
     enum Content: Equatable {
-        case score(id: String, partner: String, role: Role, score: Int)
+        case score(Score)
         /// The app has no connection at all.
         case noConnection
         /// The widget was set up for a connection that has ended since.
@@ -70,7 +85,7 @@ struct ScoreEntry: TimelineEntry {
 
 struct ScoreProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> ScoreEntry {
-        ScoreEntry(date: .now, content: .score(id: "", partner: "Alex", role: .goodgirl, score: 12))
+        ScoreEntry(date: .now, content: .score(.init(id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8)))
     }
 
     func snapshot(for configuration: SelectConnectionIntent, in context: Context) async -> ScoreEntry {
@@ -95,12 +110,14 @@ struct ScoreProvider: AppIntentTimelineProvider {
             connection = active.first
         }
         guard let connection else { return ScoreEntry(date: .now, content: .noConnection) }
-        return ScoreEntry(date: .now, content: .score(
+        return ScoreEntry(date: .now, content: .score(.init(
             id: connection.id,
             partner: connection.partnerDisplayName,
             role: connection.myRole,
-            score: connection.myScore
-        ))
+            score: connection.myScore,
+            partnerRole: connection.partnerRole ?? connection.myRole.opposite,
+            partnerScore: connection.partnerScore
+        )))
     }
 }
 
@@ -113,89 +130,147 @@ struct ScoreWidgetView: View {
 
     var body: some View {
         content
+            .fontDesign(.rounded)
             .containerBackground(for: .widget) { background }
             .widgetURL(url)
     }
 
     private var url: URL? {
-        if case .score(let id, _, _, _) = entry.content { return AppConfig.connectionURL(id: id) }
+        if case .score(let score) = entry.content { return AppConfig.connectionURL(id: score.id) }
         return nil
     }
 
     @ViewBuilder private var background: some View {
-        if case .score(_, _, let role, _) = entry.content {
-            role.gradient
+        if case .score(let score) = entry.content {
+            score.role.gradient
+                .overlay { PawPattern(size: 24).foregroundStyle(.white.opacity(0.14)) }
         } else {
-            Color(.secondarySystemBackground)
+            Cozy.background
+                .overlay { PawPattern(size: 24).foregroundStyle(Cozy.blush) }
         }
     }
 
     /// White on the role's gradient; in the tinted and clear styles the system colours the text.
     private var foreground: Color {
-        renderingMode == .fullColor && isScore ? .white : .primary
-    }
-
-    private var isScore: Bool {
-        if case .score = entry.content { return true }
-        return false
+        renderingMode == .fullColor ? .white : .primary
     }
 
     @ViewBuilder private var content: some View {
         switch entry.content {
-        case .score(_, let partner, let role, let score):
+        case .score(let score):
             switch family {
             case .accessoryInline:
-                Text(verbatim: "\(role.label) · \(score)")
+                Label {
+                    Text(verbatim: "\(score.role.label) · \(score.score)")
+                } icon: {
+                    Image(systemName: score.role.symbolName)
+                }
             case .accessoryCircular:
-                VStack(spacing: 0) {
-                    Text(score, format: .number)
+                VStack(spacing: -1) {
+                    Image(systemName: score.role.symbolName)
+                        .font(.system(size: 13))
+                    Text(score.score, format: .number)
                         .font(.system(.title2, design: .rounded, weight: .heavy))
                         .minimumScaleFactor(0.5)
                         .widgetAccentable()
-                    Text(verbatim: role == .goodgirl ? "girl" : "boy")
-                        .font(.system(size: 9, weight: .semibold, design: .rounded))
                 }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(role.label) · \(score)"))
+                .accessibilityLabel(Text(verbatim: "\(score.role.label) · \(score.score)"))
             case .accessoryRectangular:
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(verbatim: partner)
-                        .font(.headline)
+                HStack(spacing: 8) {
+                    Image(systemName: score.role.symbolName)
+                        .font(.title2)
                         .widgetAccentable()
-                    Text(verbatim: "\(role.label) · \(score)")
-                        .font(.system(.body, design: .rounded, weight: .semibold))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(verbatim: score.partner)
+                            .font(.headline)
+                            .widgetAccentable()
+                        Text(verbatim: "\(score.role.label) · \(score.score)")
+                            .font(.system(.body, design: .rounded, weight: .semibold))
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            case .systemMedium:
+                HStack(spacing: 4) {
+                    half(face: score.role.face(score.mood), badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"))
+                    Text(verbatim: "💞")
+                        .font(.system(size: 22))
+                    half(face: score.partnerRole.face(score.partnerMood), badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner))
+                }
+                .foregroundStyle(foreground)
             default:
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(verbatim: partner)
-                        .font(.subheadline.weight(.semibold))
-                        .lineLimit(1)
-                        .opacity(0.9)
+                    HStack(alignment: .top, spacing: 4) {
+                        Text(verbatim: score.partner)
+                            .font(.subheadline.weight(.bold))
+                            .lineLimit(2)
+                            .opacity(0.95)
+                        Spacer(minLength: 0)
+                        sticker(score.role.face(score.mood), badge: score.mood.badge, size: 46)
+                    }
                     Spacer(minLength: 0)
-                    Text(score, format: .number)
-                        .font(.system(size: 54, weight: .heavy, design: .rounded))
+                    Text(score.score, format: .number)
+                        .font(.system(size: 50, weight: .heavy, design: .rounded))
                         .minimumScaleFactor(0.4)
                         .lineLimit(1)
-                        .contentTransition(.numericText(value: Double(score)))
+                        .contentTransition(.numericText(value: Double(score.score)))
                         .widgetAccentable()
-                    Text(verbatim: role.label)
-                        .font(.system(.subheadline, design: .rounded, weight: .bold))
+                    Text(verbatim: score.role.label)
+                        .font(.system(.subheadline, design: .rounded, weight: .heavy))
                 }
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(partner), \(role.label) · \(score)"))
+                .accessibilityLabel(Text(verbatim: "\(score.partner), \(score.role.label) · \(score.score)"))
             }
         case .noConnection:
-            emptyState("heart.circle", "No connection", "Open misbehave to connect.")
+            emptyState("🐾", "pawprint.fill", "No connection", "Open misbehave to connect.")
         case .disconnected:
-            emptyState("heart.slash", "Disconnected", "Hold to choose another connection.")
+            emptyState("💤", "heart.slash", "Disconnected", "Hold to choose another connection.")
         }
     }
 
+    /// One person in the wide widget: mascot, score, what the points are called and whose they are.
+    private func half(face: String, badge: String?, score: Int, role: Role, name: Text) -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                sticker(face, badge: badge, size: 50)
+                Text(score, format: .number)
+                    .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    .minimumScaleFactor(0.4)
+                    .lineLimit(1)
+                    .contentTransition(.numericText(value: Double(score)))
+                    .widgetAccentable()
+            }
+            Text(verbatim: role.label)
+                .font(.system(.subheadline, design: .rounded, weight: .heavy))
+                .padding(.top, 8)
+            name
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+                .opacity(0.9)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func sticker(_ face: String, badge: String?, size: CGFloat) -> some View {
+        Text(verbatim: face)
+            .font(.system(size: size * 0.62))
+            .frame(width: size, height: size)
+            .background(.white.opacity(0.28), in: .circle)
+            .overlay(alignment: .bottomTrailing) {
+                if let badge {
+                    Text(verbatim: badge)
+                        .font(.system(size: size * 0.32))
+                        .offset(x: size * 0.1, y: size * 0.06)
+                }
+            }
+            .accessibilityHidden(true)
+    }
+
     @ViewBuilder
-    private func emptyState(_ systemImage: String, _ title: LocalizedStringKey, _ hint: LocalizedStringKey) -> some View {
+    private func emptyState(_ emoji: String, _ systemImage: String, _ title: LocalizedStringKey, _ hint: LocalizedStringKey) -> some View {
         switch family {
         case .accessoryInline:
             Text(title)
@@ -207,17 +282,20 @@ struct ScoreWidgetView: View {
             Label(title, systemImage: systemImage)
                 .font(.headline)
         default:
-            VStack(alignment: .leading, spacing: 6) {
-                Image(systemName: systemImage)
-                    .font(.title)
-                    .widgetAccentable()
+            VStack(alignment: .leading, spacing: 4) {
+                Text(verbatim: emoji)
+                    .font(.system(size: 28))
+                    .frame(width: 46, height: 46)
+                    .background(Cozy.blush, in: .circle)
+                    .accessibilityHidden(true)
                 Spacer(minLength: 0)
                 Text(title)
-                    .font(.headline)
+                    .font(.headline.weight(.heavy))
                 Text(hint)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            .foregroundStyle(Cozy.ink)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
     }
@@ -230,7 +308,7 @@ struct ScoreWidget: Widget {
         }
         .configurationDisplayName("Your points")
         .description("Shows your points from one connection.")
-        .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
 }
 

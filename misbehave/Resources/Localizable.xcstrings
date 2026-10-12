@@ -1247,13 +1247,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You have new points"
+            "value" : "You have new points 🐾"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du hast neue Punkte"
+            "value" : "Du hast neue Punkte 🐾"
           }
         }
       }

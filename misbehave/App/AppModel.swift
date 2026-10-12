@@ -338,8 +338,12 @@ final class AppModel {
             guard notificationStatus == .authorized || notificationStatus == .provisional else { return }
             let content = UNMutableNotificationContent()
             content.title = demo.partnerDisplayName
-            content.body = PushText.phrase(delta: deltas.reduce(0, +), role: demo.myRole)
+            let delta = deltas.reduce(0, +)
+            content.body = PushText.phrase(delta: delta, role: demo.myRole)
             content.sound = .default
+            if let sticker = NotificationSticker.attachment(role: demo.myRole, delta: delta) {
+                content.attachments = [sticker]
+            }
             content.userInfo = [AppConfig.connectionUserInfoKey: demo.id]
             try? await UNUserNotificationCenter.current().add(
                 UNNotificationRequest(identifier: Self.demoNotificationID, content: content, trigger: nil)
@@ -417,6 +421,9 @@ final class AppModel {
         content.threadIdentifier = Self.pointsNotificationID
         if summaries.count == 1 {
             content.userInfo = [AppConfig.connectionUserInfoKey: summaries[0].connectionID]
+            if let sticker = NotificationSticker.attachment(role: summaries[0].role, delta: summaries[0].delta) {
+                content.attachments = [sticker]
+            }
         }
         try? await UNUserNotificationCenter.current().add(
             UNNotificationRequest(identifier: Self.pointsNotificationID, content: content, trigger: nil)

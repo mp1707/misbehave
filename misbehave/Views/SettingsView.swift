@@ -13,10 +13,18 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    MascotSticker(face: role.emoji, size: 96)
+                        .hop(on: role)
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                }
+                .listSectionSpacing(8)
+
+                Section {
                     TextField("Name", text: $name)
                         .textContentType(.givenName)
                     Picker("Role", selection: $role) {
-                        ForEach(Role.allCases) { Text(verbatim: $0.label).tag($0) }
+                        ForEach(Role.allCases) { Text(verbatim: "\($0.emoji) \($0.label)").tag($0) }
                     }
                 } header: {
                     Text("You")
@@ -60,6 +68,7 @@ struct SettingsView: View {
                     Text("Ends every connection and removes your profile and all points from this iPhone and from iCloud.")
                 }
             }
+            .cozyForm()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -90,6 +99,7 @@ struct SettingsView: View {
             }
             .task { await model.refreshNotificationStatus() }
         }
+        .fontDesign(.rounded)
     }
 
     private func save() {
@@ -114,23 +124,31 @@ struct SettingsView: View {
 struct PrivacyView: View {
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
-                paragraph("What is stored", "Your role, the name you entered and one entry for every point you give or take away. Nothing else.")
-                paragraph("Where it is stored", "On your iPhone and in iCloud. Each connection lives in the iCloud account of the person who sent the invitation and is shared only with the one partner who accepted it.")
-                paragraph("Who can see it", "You and the partner of that connection. The developer has no server and cannot see any of it. There is no tracking, no advertising and no analytics.")
-                paragraph("How to delete it", "Disconnect removes one connection with all its points for both of you. \"Delete all data\" in Settings removes everything.")
+            VStack(alignment: .leading, spacing: 14) {
+                paragraph("🗂️", "What is stored", "Your role, the name you entered and one entry for every point you give or take away. Nothing else.")
+                paragraph("☁️", "Where it is stored", "On your iPhone and in iCloud. Each connection lives in the iCloud account of the person who sent the invitation and is shared only with the one partner who accepted it.")
+                paragraph("👀", "Who can see it", "You and the partner of that connection. The developer has no server and cannot see any of it. There is no tracking, no advertising and no analytics.")
+                paragraph("🧹", "How to delete it", "Disconnect removes one connection with all its points for both of you. \"Delete all data\" in Settings removes everything.")
             }
-            .padding(20)
+            .padding(16)
         }
+        .background { CozyBackground() }
         .navigationTitle("Privacy")
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func paragraph(_ title: LocalizedStringKey, _ text: LocalizedStringKey) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title).font(.headline)
-            Text(text).foregroundStyle(.secondary)
+    private func paragraph(_ emoji: String, _ title: LocalizedStringKey, _ text: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: 14) {
+            MascotSticker(face: emoji, size: 44)
+            VStack(alignment: .leading, spacing: 6) {
+                Text(title).font(.headline)
+                Text(text).foregroundStyle(.secondary)
+            }
         }
+        .ink()
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .softCard(cornerRadius: 24)
     }
 }
 
@@ -188,6 +206,7 @@ struct DiagnosticsView: View {
                 .disabled(isChecking)
             }
         }
+        .cozyForm()
         .navigationTitle("Diagnostics")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { pushRun = model.lastPushRun() }

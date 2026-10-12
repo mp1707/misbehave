@@ -14,14 +14,23 @@ struct RootView: View {
                 HomeView()
             }
         }
+        .fontDesign(.rounded)
         .animation(.default, value: model.state.profile == nil)
         .overlay {
             if model.isAcceptingInvite {
                 ZStack {
                     Color.black.opacity(0.25).ignoresSafeArea()
-                    ProgressView("Connecting…")
-                        .padding(24)
-                        .background(.regularMaterial, in: .rect(cornerRadius: 16))
+                    VStack(spacing: 14) {
+                        HStack(spacing: 6) {
+                            MascotSticker(face: Role.goodgirl.emoji, size: 56).bobbing()
+                            Text(verbatim: "💞").font(.title2)
+                            MascotSticker(face: Role.goodboy.emoji, size: 56).bobbing(delay: 0.4)
+                        }
+                        ProgressView("Connecting…")
+                    }
+                    .ink()
+                    .padding(28)
+                    .softCard()
                 }
             }
         }
@@ -48,20 +57,6 @@ struct RootView: View {
     }
 }
 
-/// A pill-shaped primary button in the role's colours.
-struct ProminentButtonStyle: ButtonStyle {
-    var role: Role
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity, minHeight: 52)
-            .background(role.gradient, in: .capsule)
-            .opacity(configuration.isPressed ? 0.8 : 1)
-    }
-}
-
 /// Explains in one screen why notifications matter here, then hands over to the system prompt.
 struct NotificationPromptView: View {
     @Environment(AppModel.self) private var model
@@ -72,16 +67,17 @@ struct NotificationPromptView: View {
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
-            Image(systemName: "bell.badge.fill")
-                .font(.system(size: 72))
-                .foregroundStyle(role.gradient)
-            Text("Don't miss the moment")
-                .font(.largeTitle.bold())
-                .multilineTextAlignment(.center)
-            Text("When your partner gives you a point, your iPhone tells you right away and the widget follows. Without notifications you only see it when you open the app.")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            preview
+                .padding(.bottom, 12)
+            VStack(spacing: 20) {
+                Text("Don't miss the moment")
+                    .font(.largeTitle.weight(.heavy))
+                Text("When your partner gives you a point, your iPhone tells you right away and the widget follows. Without notifications you only see it when you open the app.")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.center)
+            .ink()
             Spacer()
             Button {
                 isAsking = true
@@ -99,6 +95,37 @@ struct NotificationPromptView: View {
                 .padding(.bottom, 8)
         }
         .padding(24)
+        .background { CozyBackground() }
+        .fontDesign(.rounded)
         .interactiveDismissDisabled()
+    }
+
+    /// What the notification will look like, so the system prompt that follows makes sense.
+    private var preview: some View {
+        HStack(spacing: 12) {
+            Text(verbatim: role.face(afterDelta: 1))
+                .font(.system(size: 30))
+                .frame(width: 48, height: 48)
+                .background(role.gradient, in: .rect(cornerRadius: 13))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: PushText.partnerFallback)
+                    .font(.subheadline.weight(.bold))
+                Text(verbatim: PushText.phrase(delta: 1, role: role))
+                    .font(.footnote)
+            }
+            Spacer(minLength: 0)
+        }
+        .ink()
+        .padding(14)
+        .softCard(cornerRadius: 24)
+        .overlay(alignment: .topTrailing) {
+            Text(verbatim: "🔔")
+                .font(.system(size: 38))
+                .rotationEffect(.degrees(14))
+                .offset(x: 6, y: -24)
+                .bobbing()
+        }
+        .rotationEffect(.degrees(-2))
+        .accessibilityHidden(true)
     }
 }

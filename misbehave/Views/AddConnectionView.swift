@@ -15,33 +15,43 @@ struct AddConnectionView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    Image(systemName: created == nil ? "link.circle.fill" : "checkmark.circle.fill")
-                        .font(.system(size: 64))
-                        .foregroundStyle(role.gradient)
+                    MascotSticker(face: created == nil ? "💌" : "🎉", size: 104)
+                        .hop(on: created == nil)
+                        .bobbing()
                         .padding(.top, 24)
-                        .contentTransition(.symbolEffect(.replace))
 
                     if let url = created?.inviteURL {
-                        Text("Your link is ready")
-                            .font(.title2.bold())
-                        Text("Send it to your partner. It works exactly once, so nobody else can join with it.")
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                        VStack(spacing: 20) {
+                            Text("Your link is ready")
+                                .font(.title2.weight(.heavy))
+                            Text("Send it to your partner. It works exactly once, so nobody else can join with it.")
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .ink()
                         ShareLink(item: url, message: Text("Let's keep score. Open this on your iPhone to connect with me on misbehave.")) {
                             Label("Send invitation", systemImage: "square.and.arrow.up")
                         }
                         .buttonStyle(ProminentButtonStyle(role: role))
                     } else {
                         Text("Invite your partner")
-                            .font(.title2.bold())
+                            .font(.title2.weight(.heavy))
+                            .ink()
                         VStack(alignment: .leading, spacing: 14) {
                             step("1.circle.fill", "Create a link and send it to your partner.")
                             step("2.circle.fill", "Your partner opens it on their iPhone with misbehave installed.")
                             step("3.circle.fill", "You're connected. This connection keeps its own score, separate from all others.")
                         }
-                        Text("You'll be \(role.label) in this connection.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+                        .ink()
+                        .padding(18)
+                        .softCard(cornerRadius: 24)
+                        HStack(spacing: 6) {
+                            Text(verbatim: role.emoji)
+                            Text("You'll be \(role.label) in this connection.")
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .ink()
 
                         if !model.isCloudAvailable {
                             Label("Sign in to iCloud in the Settings app to connect with a partner.", systemImage: "icloud.slash")
@@ -74,6 +84,7 @@ struct AddConnectionView: View {
                 }
                 .padding(.horizontal, 24)
             }
+            .background { CozyBackground() }
             .navigationTitle("New connection")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -83,13 +94,14 @@ struct AddConnectionView: View {
             }
             .interactiveDismissDisabled(isCreating)
         }
+        .fontDesign(.rounded)
     }
 
     private func step(_ systemImage: String, _ text: LocalizedStringKey) -> some View {
         Label {
             Text(text)
         } icon: {
-            Image(systemName: systemImage).foregroundStyle(role.tint)
+            Image(systemName: systemImage).font(.title3).foregroundStyle(role.gradient)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

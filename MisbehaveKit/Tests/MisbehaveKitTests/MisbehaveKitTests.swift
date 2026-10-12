@@ -161,15 +161,15 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
     }
 
     @Test func aSinglePointNamesTheRole() {
-        #expect(PushText.phrase(delta: 1, role: .goodgirl) == "You received +1 goodgirl point")
-        #expect(PushText.phrase(delta: 3, role: .goodboy) == "You received +3 goodboy points")
-        #expect(PushText.phrase(delta: -1, role: .goodboy) == "You received \u{2212}1 goodboy point")
+        #expect(PushText.phrase(delta: 1, role: .goodgirl) == "You received +1 goodgirl point 😻")
+        #expect(PushText.phrase(delta: 3, role: .goodboy) == "You received +3 goodboy points 🐶🦴")
+        #expect(PushText.phrase(delta: -1, role: .goodboy) == "You received \u{2212}1 goodboy point 🐶💔")
     }
 
     @Test func oneConnectionUsesThePartnerAsTitle() {
         let content = PushText.content(for: [PointSummary(connectionID: "a", partnerName: "Anna", role: .goodboy, delta: 2)])
         #expect(content?.title == "Anna")
-        #expect(content?.body == "You received +2 goodboy points")
+        #expect(content?.body == "You received +2 goodboy points 🐶🦴")
     }
 
     @Test func severalConnectionsGetALineEach() {
@@ -178,7 +178,15 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
             PointSummary(connectionID: "b", partnerName: nil, role: .goodboy, delta: -2),
         ])
         #expect(content?.title == nil)
-        #expect(content?.body == "Anna: +1 goodboy point\nYour partner: \u{2212}2 goodboy points")
+        #expect(content?.body == "Anna: +1 goodboy point 🐶🦴\nYour partner: \u{2212}2 goodboy points 🐶💔")
+    }
+
+    @Test func catsShowTheirMoodAndDogsCarryIt() {
+        #expect(Mood.allCases.map { Role.goodgirl.face($0) } == ["😿", "🐱", "😺", "😸", "😻"])
+        #expect(Set(Mood.allCases.map { Role.goodboy.face($0) }) == ["🐶"])
+        #expect([-3, 0, 1, 4, 5, 14, 15].map(Mood.init(score:)) == [.naughty, .fresh, .good, .good, .great, .great, .best])
+        #expect(Role.goodgirl.moodLine(.great) == "Purring loudly")
+        #expect(Role.goodboy.moodLine(.naughty) == "In the doghouse")
     }
 
     @Test func nothingUnseenMeansNoText() {

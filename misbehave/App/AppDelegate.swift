@@ -9,6 +9,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        CozyAppearance.apply()
         // CloudKit's silent sync pushes need the registration even without notification permission.
         application.registerForRemoteNotifications()
         AppModel.shared.start()

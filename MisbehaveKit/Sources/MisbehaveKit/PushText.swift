@@ -45,7 +45,7 @@ extension Connection {
     }
 }
 
-/// The wording of the notification, e.g. "You received +1 goodgirl point".
+/// The wording of the notification, e.g. "You received +1 goodgirl point 😻".
 public enum PushText {
     /// Looked up in the app's string catalog by the receiving device when CloudKit sends the push.
     public static let neutralBodyKey = "push.neutral.body"
@@ -57,15 +57,15 @@ public enum PushText {
     }
 
     public static func phrase(delta: Int, role: Role) -> String {
-        if delta == 0 { return format("push.changed", role.label) }
+        if delta == 0 { return format("push.changed", role.label) + " " + role.emoji }
         let key = abs(delta) == 1 ? "push.received.one" : "push.received.other"
-        return format(key, signed(delta), role.label)
+        return format(key, signed(delta), role.label) + " " + role.reaction(toDelta: delta)
     }
 
     public static func line(name: String, delta: Int, role: Role) -> String {
-        if delta == 0 { return format("push.line.changed", name, role.label) }
+        if delta == 0 { return format("push.line.changed", name, role.label) + " " + role.emoji }
         let key = abs(delta) == 1 ? "push.line.one" : "push.line.other"
-        return format(key, name, signed(delta), role.label)
+        return format(key, name, signed(delta), role.label) + " " + role.reaction(toDelta: delta)
     }
 
     /// Title and body for a notification covering the given connections; nil when there is nothing to say.
@@ -81,7 +81,7 @@ public enum PushText {
         return (nil, lines.joined(separator: "\n"))
     }
 
-    private static func string(_ key: String) -> String {
+    static func string(_ key: String) -> String {
         String(localized: String.LocalizationValue(key), bundle: .module)
     }
 
