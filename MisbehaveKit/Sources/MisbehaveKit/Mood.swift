@@ -1,6 +1,7 @@
 import Foundation
 
-/// How a score feels. Only decoration: it picks the mascot's face and a short line under the score.
+/// How a score feels. Only decoration: it picks the mascot's badge and a short line under the score.
+/// The mascot itself always keeps its one face, 🐱 or 🐶.
 public enum Mood: String, Sendable, CaseIterable {
     case naughty, fresh, good, great, best
 
@@ -27,37 +28,23 @@ public enum Mood: String, Sendable, CaseIterable {
 }
 
 extension Role {
-    /// The mascot's face for a score. Only cats come with moods in emoji; the dog shows it with its badge.
-    public func face(_ mood: Mood) -> String {
-        guard self == .goodgirl else { return emoji }
-        return switch mood {
-        case .naughty: "😿"
-        case .fresh: "🐱"
-        case .good: "😺"
-        case .great: "😸"
-        case .best: "😻"
-        }
-    }
-
     /// E.g. "Purring loudly" or "In the doghouse".
     public func moodLine(_ mood: Mood) -> String {
         PushText.string("mood.\(rawValue).\(mood.rawValue)")
     }
 
-    /// The mascot's face right after it got or lost points.
-    public func face(afterDelta delta: Int) -> String {
-        guard self == .goodgirl else { return emoji }
-        return delta > 0 ? "😻" : delta < 0 ? "😿" : emoji
-    }
-
-    /// What the dog's face cannot say itself: a bone for a point, a broken heart for a lost one.
+    /// Sits next to the mascot in the notification picture: a treat for a point, a broken heart for a lost one.
     public func accent(afterDelta delta: Int) -> String? {
-        guard self == .goodboy, delta != 0 else { return nil }
-        return delta > 0 ? "🦴" : "💔"
+        guard delta != 0 else { return nil }
+        if delta < 0 { return "💔" }
+        return self == .goodgirl ? "🐟" : "🦴"
     }
 
-    /// Closes the notification text, e.g. "😻" or "🐶🦴".
+    /// Closes the notification text, e.g. "😻" or "🐶🦴". The only place the cat changes its face.
     public func reaction(toDelta delta: Int) -> String {
-        face(afterDelta: delta) + (accent(afterDelta: delta) ?? "")
+        switch self {
+        case .goodgirl: delta > 0 ? "😻" : delta < 0 ? "😿" : emoji
+        case .goodboy: emoji + (accent(afterDelta: delta) ?? "")
+        }
     }
 }

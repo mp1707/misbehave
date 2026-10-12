@@ -38,7 +38,7 @@ The Xcode project uses file-system-synchronized folders: a file added to a targe
 ### Look
 
 - `MisbehaveKit/RoleStyle.swift`: the two pink gradients, the `Cozy` colours (cream background, cards, plum ink) and the paw pattern. Shared by app and widget.
-- `MisbehaveKit/Mood.swift`: a score maps to a mood, which picks the mascot's face, a badge and a line like "Purring loudly". Decoration only.
+- `MisbehaveKit/Mood.swift`: a score maps to a mood, which picks a badge on the mascot and a line like "Purring loudly". Decoration only. The mascot itself is always 🐱 or 🐶 (Marco did not want the cat's face to change with the score); only the reaction closing the notification text uses 😻/😿.
 - `misbehave/Views/Theme.swift`: stickers, cards, button styles, the emoji burst and the other little animations. Screens are built from these; don't style a screen from scratch.
 - Forms keep system colours. `.ink()` goes on text groups only: on a container it takes the tint from plain buttons and the red from destructive ones.
 
@@ -102,7 +102,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **5**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **6**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
@@ -133,6 +133,6 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 
 ## Open
 
-- Not yet seen on a real iPhone: the mascot picture next to the notification text, and the medium widget on the home screen (its layout was only checked as a copy inside the app).
+- Not yet seen on a real iPhone: the mascot picture next to the notification text.
 - Never exercised on real devices: the owner detecting that the partner left (read from the share's participant list), "delete all data" against iCloud, account switch.
 - Before the App Store: privacy policy and support URLs, store page, review notes with a pairing video, age rating, final icon (the current one is a placeholder).

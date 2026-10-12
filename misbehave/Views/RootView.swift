@@ -103,7 +103,7 @@ struct NotificationPromptView: View {
     /// What the notification will look like, so the system prompt that follows makes sense.
     private var preview: some View {
         HStack(spacing: 12) {
-            Text(verbatim: role.face(afterDelta: 1))
+            Text(verbatim: role.emoji)
                 .font(.system(size: 30))
                 .frame(width: 48, height: 48)
                 .background(role.gradient, in: .rect(cornerRadius: 13))

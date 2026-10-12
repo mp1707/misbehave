@@ -181,9 +181,7 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(content?.body == "Anna: +1 goodboy point 🐶🦴\nYour partner: \u{2212}2 goodboy points 🐶💔")
     }
 
-    @Test func catsShowTheirMoodAndDogsCarryIt() {
-        #expect(Mood.allCases.map { Role.goodgirl.face($0) } == ["😿", "🐱", "😺", "😸", "😻"])
-        #expect(Set(Mood.allCases.map { Role.goodboy.face($0) }) == ["🐶"])
+    @Test func aScoreHasAMood() {
         #expect([-3, 0, 1, 4, 5, 14, 15].map(Mood.init(score:)) == [.naughty, .fresh, .good, .good, .great, .great, .best])
         #expect(Role.goodgirl.moodLine(.great) == "Purring loudly")
         #expect(Role.goodboy.moodLine(.naughty) == "In the doghouse")

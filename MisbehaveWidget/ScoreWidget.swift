@@ -170,7 +170,7 @@ struct ScoreWidgetView: View {
                     Image(systemName: score.role.symbolName)
                         .font(.system(size: 13))
                     Text(score.score, format: .number)
-                        .font(.system(.title2, design: .rounded, weight: .heavy))
+                        .font(.system(.title2, design: .rounded).weight(.heavy))
                         .minimumScaleFactor(0.5)
                         .widgetAccentable()
                 }
@@ -186,16 +186,16 @@ struct ScoreWidgetView: View {
                             .font(.headline)
                             .widgetAccentable()
                         Text(verbatim: "\(score.role.label) · \(score.score)")
-                            .font(.system(.body, design: .rounded, weight: .semibold))
+                            .font(.system(.body, design: .rounded).weight(.semibold))
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             case .systemMedium:
                 HStack(spacing: 4) {
-                    half(face: score.role.face(score.mood), badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"))
+                    half(face: score.role.emoji, badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"))
                     Text(verbatim: "💞")
                         .font(.system(size: 22))
-                    half(face: score.partnerRole.face(score.partnerMood), badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner))
+                    half(face: score.partnerRole.emoji, badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner))
                 }
                 .foregroundStyle(foreground)
             default:
@@ -206,7 +206,7 @@ struct ScoreWidgetView: View {
                             .lineLimit(2)
                             .opacity(0.95)
                         Spacer(minLength: 0)
-                        sticker(score.role.face(score.mood), badge: score.mood.badge, size: 46)
+                        sticker(score.role.emoji, badge: score.mood.badge, size: 46)
                     }
                     Spacer(minLength: 0)
                     Text(score.score, format: .number)
@@ -216,7 +216,7 @@ struct ScoreWidgetView: View {
                         .contentTransition(.numericText(value: Double(score.score)))
                         .widgetAccentable()
                     Text(verbatim: score.role.label)
-                        .font(.system(.subheadline, design: .rounded, weight: .heavy))
+                        .font(.system(.subheadline, design: .rounded).weight(.heavy))
                 }
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
@@ -243,7 +243,7 @@ struct ScoreWidgetView: View {
                     .widgetAccentable()
             }
             Text(verbatim: role.label)
-                .font(.system(.subheadline, design: .rounded, weight: .heavy))
+                .font(.system(.subheadline, design: .rounded).weight(.heavy))
                 .padding(.top, 8)
             name
                 .font(.caption.weight(.semibold))

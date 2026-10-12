@@ -61,7 +61,7 @@ private struct ActiveConnectionView: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            MascotSticker(face: connection.myRole.face(myMood), size: 96, badge: myMood.badge, onGradient: true)
+            MascotSticker(face: connection.myRole.emoji, size: 96, badge: myMood.badge, onGradient: true)
                 .hop(on: connection.myScore)
                 .padding(.bottom, 6)
             Text("Your \(connection.myRole.label) points")
@@ -94,7 +94,7 @@ private struct ActiveConnectionView: View {
 
         VStack(spacing: 18) {
             HStack(spacing: 14) {
-                MascotSticker(face: partnerRole.face(partnerMood), size: 64, badge: partnerMood.badge)
+                MascotSticker(face: partnerRole.emoji, size: 64, badge: partnerMood.badge)
                     .hop(on: connection.partnerScore)
                 VStack(alignment: .leading, spacing: 2) {
                     if let partnerRole = connection.partnerRole {

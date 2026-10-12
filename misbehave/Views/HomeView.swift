@@ -136,7 +136,7 @@ struct ConnectionCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
                 if connection.phase == .active {
-                    MascotSticker(face: connection.myRole.face(mood), size: 72, badge: mood.badge, onGradient: true)
+                    MascotSticker(face: connection.myRole.emoji, size: 72, badge: mood.badge, onGradient: true)
                         .hop(on: connection.myScore)
                 } else {
                     MascotSticker(face: "💌", size: 72, onGradient: true)

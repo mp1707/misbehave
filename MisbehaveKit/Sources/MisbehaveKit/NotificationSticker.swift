@@ -29,7 +29,7 @@ public enum NotificationSticker {
 
             UIColor.white.withAlphaComponent(0.28).setFill()
             UIBezierPath(ovalIn: CGRect(x: 35, y: 30, width: 230, height: 230)).fill()
-            draw(role.face(afterDelta: delta), size: 150, centeredAt: CGPoint(x: 150, y: 145))
+            draw(role.emoji, size: 150, centeredAt: CGPoint(x: 150, y: 145))
             if let accent = role.accent(afterDelta: delta) {
                 draw(accent, size: 64, centeredAt: CGPoint(x: 62, y: 62))
             }
