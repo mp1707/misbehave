@@ -104,6 +104,13 @@ final class SyncCoordinator: CKSyncEngineDelegate {
         }
     }
 
+    /// Fetches both databases and returns when done; used when a push wakes the app.
+    func fetchAll() async {
+        for engine in engines.values {
+            try? await engine.fetchChanges()
+        }
+    }
+
     /// Several quick taps go out in one request.
     private func scheduleSend(_ side: Side) {
         guard let engine = engines[side] else { return }
@@ -147,6 +154,7 @@ final class SyncCoordinator: CKSyncEngineDelegate {
             model.applyFetched(changes.modifications.map(\.record), side: side)
 
         case .didFetchChanges:
+            model.didSync()
             // A connection rebuilt from its zone may still lack our profile record.
             guard model.state.profile != nil else { break }
             for connection in model.state.connections

@@ -18,6 +18,8 @@ struct AppAlert: Identifiable {
 final class AppModel {
     static let shared = AppModel()
     nonisolated static let demoNotificationID = "demo"
+    /// Collapse id of the CloudKit push and identifier of the fallback notification, so one replaces the other.
+    nonisolated static let pointsNotificationID = "points"
     private static let demoID = "demo"
 
     private(set) var state: StoreState
@@ -27,6 +29,9 @@ final class AppModel {
     private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
     private(set) var isAcceptingInvite = false
     var quotaExceeded = false
+    private var notificationStatusIsKnown = false
+    private var notificationPromptSnoozed = false
+    private(set) var diagnostics: AppDiagnostics
 
     @ObservationIgnored private let store: LocalStore
     @ObservationIgnored private(set) lazy var sync = SyncCoordinator(model: self)
@@ -34,10 +39,15 @@ final class AppModel {
     @ObservationIgnored private var demoReply: Task<Void, Never>?
     @ObservationIgnored private var demoPending: [Int] = []
     @ObservationIgnored private var accountObserver: (any NSObjectProtocol)?
+    @ObservationIgnored private var isActive = false
+    @ObservationIgnored private var subscriptionsSavedThisLaunch = false
+    @ObservationIgnored private var unannounced: Set<String> = []
+    @ObservationIgnored private var announcement: Task<Void, Never>?
 
     init(store: LocalStore = .shared) {
         self.store = store
         state = store.snapshot()
+        diagnostics = store.loadDiagnostics()
     }
 
     func start() {
@@ -66,9 +76,17 @@ final class AppModel {
 
     var isCloudAvailable: Bool { accountStatus == .available }
 
-    var showsPushPrompt: Bool {
-        !state.connections.isEmpty && notificationStatus == .notDetermined && !state.prefs.pushPromptDismissed
+    /// Notifications are the point of the app, so the question is never dropped for good:
+    /// while iOS has not been asked yet, it comes back on every launch.
+    private var notificationQuestionIsOpen: Bool {
+        !state.connections.isEmpty && notificationStatusIsKnown && notificationStatus == .notDetermined
     }
+
+    /// The full-screen explanation that leads to the system prompt.
+    var showsNotificationPrompt: Bool { notificationQuestionIsOpen && !notificationPromptSnoozed }
+
+    /// The card on the home screen, for whoever chose "Later" this time.
+    var showsPushPrompt: Bool { notificationQuestionIsOpen && notificationPromptSnoozed }
 
     var showsPushDeniedHint: Bool {
         state.hasRealConnection && notificationStatus == .denied && !state.prefs.pushDeniedHintDismissed
@@ -77,6 +95,9 @@ final class AppModel {
     // MARK: Lifecycle
 
     func sceneBecameActive() {
+        isActive = true
+        announcement?.cancel()
+        unannounced = []
         let inbox = store.loadInbox()
         mutate {
             $0.absorb(inbox)
@@ -93,7 +114,33 @@ final class AppModel {
     }
 
     func sceneLeftForeground() {
+        isActive = false
         mutate { $0.lastActiveAt = .now }
+    }
+
+    // MARK: Diagnostics
+
+    func noteDiagnostics(_ body: (inout AppDiagnostics) -> Void) {
+        body(&diagnostics)
+        store.saveDiagnostics(diagnostics)
+    }
+
+    /// What the notification extension did the last time a push reached it.
+    func lastPushRun() -> PushRun? {
+        store.loadInbox().lastRun
+    }
+
+    func didSync() {
+        noteDiagnostics {
+            $0.lastSyncAt = .now
+            if !isActive { $0.lastBackgroundSyncAt = .now }
+        }
+    }
+
+    /// A CloudKit push woke the app in the background: sync now so the widget is right.
+    func wokenByPush() async {
+        noteDiagnostics { $0.lastWakeByPushAt = .now }
+        await sync.fetchAll()
     }
 
     func open(connectionID: String) {
@@ -304,6 +351,7 @@ final class AppModel {
 
     func refreshNotificationStatus() async {
         notificationStatus = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+        notificationStatusIsKnown = true
     }
 
     func requestNotifications() async {
@@ -311,22 +359,75 @@ final class AppModel {
         await refreshNotificationStatus()
     }
 
-    func dismissPushPrompt() {
-        mutate { $0.prefs.pushPromptDismissed = true }
+    /// Hides the full-screen prompt until the next launch.
+    func snoozeNotificationPrompt() {
+        notificationPromptSnoozed = true
     }
 
     func dismissPushDeniedHint() {
         mutate { $0.prefs.pushDeniedHintDismissed = true }
     }
 
-    private func ensureSubscriptionsIfNeeded() async {
-        guard state.hasRealConnection, isCloudAvailable else { return }
-        let prefs = state.prefs
-        guard !prefs.privateSubscriptionSaved || !prefs.sharedSubscriptionSaved else { return }
-        let saved = await sync.saveSubscriptions(private: !prefs.privateSubscriptionSaved, shared: !prefs.sharedSubscriptionSaved)
-        mutate {
-            if saved.private { $0.prefs.privateSubscriptionSaved = true }
-            if saved.shared { $0.prefs.sharedSubscriptionSaved = true }
+    /// Saves the two push subscriptions once per launch. Saving again is harmless and repairs
+    /// a subscription that got lost or was created by an older version.
+    func ensureSubscriptionsIfNeeded(force: Bool = false) async {
+        guard state.hasRealConnection, isCloudAvailable, force || !subscriptionsSavedThisLaunch else { return }
+        subscriptionsSavedThisLaunch = true
+        let result = await sync.saveSubscriptions()
+        noteDiagnostics {
+            $0.privateSubscriptionError = result.privateError
+            $0.sharedSubscriptionError = result.sharedError
+            if result.privateError == nil { $0.privateSubscriptionAt = .now }
+            if result.sharedError == nil { $0.sharedSubscriptionAt = .now }
+        }
+        if result.privateError != nil || result.sharedError != nil {
+            subscriptionsSavedThisLaunch = false
+        }
+    }
+
+    // MARK: Fallback notification
+
+    /// Partner points arrived through a background sync. Normally CloudKit's visible push has
+    /// already told the person; if it did not show up, say it ourselves.
+    private func partnerPointsArrived(_ connectionIDs: Set<String>) {
+        guard !connectionIDs.isEmpty, !isActive else { return }
+        unannounced.formUnion(connectionIDs)
+        announcement?.cancel()
+        announcement = Task { await announceIfNeeded() }
+    }
+
+    private func announceIfNeeded() async {
+        let background = UIApplication.shared.beginBackgroundTask(withName: "announce")
+        defer { UIApplication.shared.endBackgroundTask(background) }
+        // Give the push and the notification extension time to get there first.
+        try? await Task.sleep(for: .seconds(6))
+        guard !Task.isCancelled, !isActive else { return }
+        let connectionIDs = unannounced
+        unannounced = []
+        await refreshNotificationStatus()
+        guard notificationStatus == .authorized || notificationStatus == .provisional else { return }
+        guard await !Self.remoteNotificationWasJustDelivered() else { return }
+        // Only points newer than the last look at the app; a restored history stays quiet.
+        let summaries = state.unseenSummaries().filter { connectionIDs.contains($0.connectionID) }
+        guard let text = PushText.content(for: summaries) else { return }
+        let content = UNMutableNotificationContent()
+        if let title = text.title { content.title = title }
+        content.body = text.body
+        content.sound = .default
+        content.threadIdentifier = Self.pointsNotificationID
+        if summaries.count == 1 {
+            content.userInfo = [AppConfig.connectionUserInfoKey: summaries[0].connectionID]
+        }
+        try? await UNUserNotificationCenter.current().add(
+            UNNotificationRequest(identifier: Self.pointsNotificationID, content: content, trigger: nil)
+        )
+        noteDiagnostics { $0.lastFallbackNotificationAt = .now }
+    }
+
+    nonisolated private static func remoteNotificationWasJustDelivered() async -> Bool {
+        let cutoff = Date.now.addingTimeInterval(-90)
+        return await UNUserNotificationCenter.current().deliveredNotifications().contains {
+            $0.request.trigger is UNPushNotificationTrigger && $0.date > cutoff
         }
     }
 
@@ -341,6 +442,8 @@ final class AppModel {
         path = []
         state = StoreState()
         store.deleteAll()
+        diagnostics = AppDiagnostics()
+        subscriptionsSavedThisLaunch = false
         WidgetCenter.shared.reloadAllTimelines()
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         if !purged && !real.isEmpty {
@@ -358,6 +461,7 @@ final class AppModel {
         guard !records.isEmpty else { return }
         let skipped = sync.zonesPendingRemoval(side: side)
         var partnerLeft: [String] = []
+        var receivedIn: Set<String> = []
         mutate { state in
             for record in records {
                 let zoneID = record.recordID.zoneID
@@ -365,7 +469,9 @@ final class AppModel {
                       let index = Self.ensureConnection(for: zoneID, side: side, in: &state) else { continue }
 
                 if let event = CloudSchema.event(from: record) {
-                    state.connections[index].insert(event)
+                    if state.connections[index].insert(event), event.from == side.other {
+                        receivedIn.insert(state.connections[index].id)
+                    }
                 } else if let profile = CloudSchema.profile(from: record) {
                     if profile.side == side {
                         // Our own profile, written by this or another of our devices.
@@ -397,6 +503,7 @@ final class AppModel {
             }
         }
         for id in partnerLeft { endedByPartner(id, deleteZone: true) }
+        partnerPointsArrived(receivedIn)
     }
 
     func zoneAppeared(_ zoneID: CKRecordZone.ID, side: Side) {
@@ -452,6 +559,7 @@ final class AppModel {
             state.prefs.privateSubscriptionSaved = false
             state.prefs.sharedSubscriptionSaved = false
         }
+        subscriptionsSavedThisLaunch = false
     }
 
     // MARK: Results of uploads

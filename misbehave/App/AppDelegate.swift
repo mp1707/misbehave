@@ -15,6 +15,27 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         return true
     }
 
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        AppModel.shared.noteDiagnostics {
+            $0.pushTokenAt = .now
+            $0.pushTokenError = nil
+        }
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: any Error) {
+        AppModel.shared.noteDiagnostics { $0.pushTokenError = InboxRefresher.describe(error) }
+    }
+
+    /// The visible CloudKit push also carries `content-available`, so the app gets a moment
+    /// in the background to sync and refresh the widget.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any]
+    ) async -> UIBackgroundFetchResult {
+        await AppModel.shared.wokenByPush()
+        return .newData
+    }
+
     func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,

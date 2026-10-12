@@ -62,7 +62,6 @@ struct HomeView: View {
             ) {
                 Button("Allow notifications") { Task { await model.requestNotifications() } }
                     .buttonStyle(.borderedProminent)
-                Button("Not now") { model.dismissPushPrompt() }
             }
         } else if model.showsPushDeniedHint {
             NoticeCard(

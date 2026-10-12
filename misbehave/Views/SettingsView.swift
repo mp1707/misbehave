@@ -49,6 +49,7 @@ struct SettingsView: View {
                         }
                     }
                     NavigationLink("Privacy") { PrivacyView() }
+                    NavigationLink("Diagnostics") { DiagnosticsView() }
                     LabeledContent("Version") { Text(verbatim: appVersion) }
                 }
 
@@ -104,7 +105,9 @@ struct SettingsView: View {
     }
 
     private var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
+        return "\(version) (\(build))"
     }
 }
 
@@ -127,6 +130,109 @@ struct PrivacyView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title).font(.headline)
             Text(text).foregroundStyle(.secondary)
+        }
+    }
+}
+
+/// The facts needed to see why a push did or did not arrive, readable on each iPhone.
+struct DiagnosticsView: View {
+    @Environment(AppModel.self) private var model
+    @State private var pushRun: PushRun?
+    @State private var isChecking = false
+
+    var body: some View {
+        let diagnostics = model.diagnostics
+        Form {
+            Section {
+                row("iCloud", ok: model.isCloudAvailable, value: model.isCloudAvailable ? String(localized: "Available") : String(localized: "Not available"))
+                row("Notification permission", ok: notificationsAllowed, value: notificationsAllowed ? String(localized: "On") : String(localized: "Off"))
+                row("Push registration", date: diagnostics.pushTokenAt, error: diagnostics.pushTokenError)
+                row("Subscription, own invitations", date: diagnostics.privateSubscriptionAt, error: diagnostics.privateSubscriptionError)
+                row("Subscription, accepted invitations", date: diagnostics.sharedSubscriptionAt, error: diagnostics.sharedSubscriptionError)
+            } header: {
+                Text("Setup")
+            } footer: {
+                Text("All five need a green check for notifications to arrive while the app is closed.")
+            }
+
+            Section {
+                row("Last sync", date: diagnostics.lastSyncAt)
+                row("Last background sync", date: diagnostics.lastBackgroundSyncAt)
+                row("Last wake-up by push", date: diagnostics.lastWakeByPushAt)
+                row(
+                    "Last push processed",
+                    date: pushRun?.date,
+                    error: pushRun?.error,
+                    detail: pushRun.map { String(localized: "\($0.newEvents) new, \($0.zonesFailed) failed") }
+                )
+                row("Last fallback notification", date: diagnostics.lastFallbackNotificationAt)
+            } header: {
+                Text("What happened")
+            } footer: {
+                Text("Give a point from the other iPhone while this app is closed, then open this page. The times show how far the push got.")
+            }
+
+            Section {
+                Button {
+                    Task {
+                        isChecking = true
+                        await model.refreshAccountStatus()
+                        await model.refreshNotificationStatus()
+                        await model.ensureSubscriptionsIfNeeded(force: true)
+                        pushRun = model.lastPushRun()
+                        isChecking = false
+                    }
+                } label: {
+                    if isChecking { ProgressView() } else { Text("Check again") }
+                }
+                .disabled(isChecking)
+            }
+        }
+        .navigationTitle("Diagnostics")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { pushRun = model.lastPushRun() }
+    }
+
+    private var notificationsAllowed: Bool {
+        model.notificationStatus == .authorized || model.notificationStatus == .provisional
+    }
+
+    private func row(_ title: LocalizedStringKey, ok: Bool, value: String) -> some View {
+        LabeledContent {
+            Text(verbatim: value)
+        } label: {
+            Label {
+                Text(title)
+            } icon: {
+                Image(systemName: ok ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .foregroundStyle(ok ? .green : .red)
+            }
+        }
+    }
+
+    private func row(_ title: LocalizedStringKey, date: Date?, error: String? = nil, detail: String? = nil) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            LabeledContent {
+                Text(verbatim: date.map { $0.formatted(date: .abbreviated, time: .standard) } ?? String(localized: "Never"))
+            } label: {
+                Label {
+                    Text(title)
+                } icon: {
+                    if error != nil {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.red)
+                    } else if date != nil {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    } else {
+                        Image(systemName: "circle.dashed").foregroundStyle(.secondary)
+                    }
+                }
+            }
+            if let detail {
+                Text(verbatim: detail).font(.footnote).foregroundStyle(.secondary)
+            }
+            if let error {
+                Text(verbatim: error).font(.footnote).foregroundStyle(.red).textSelection(.enabled)
+            }
         }
     }
 }

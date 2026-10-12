@@ -61,6 +61,16 @@
         }
       }
     },
+    "%lld new, %lld failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld neu, %2$lld fehlgeschlagen"
+          }
+        }
+      }
+    },
     "Add connection" : {
       "localizations" : {
         "de" : {
@@ -91,6 +101,16 @@
         }
       }
     },
+    "All five need a green check for notifications to arrive while the app is closed." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle fünf brauchen einen grünen Haken, damit Mitteilungen bei geschlossener App ankommen."
+          }
+        }
+      }
+    },
     "Allow notifications" : {
       "localizations" : {
         "de" : {
@@ -107,6 +127,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erlaube Mitteilungen, um sofort zu erfahren, wenn dein Partner dir einen Punkt gibt oder abzieht."
+          }
+        }
+      }
+    },
+    "Available" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verfügbar"
           }
         }
       }
@@ -137,6 +167,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einladung zurückziehen?"
+          }
+        }
+      }
+    },
+    "Check again" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut prüfen"
           }
         }
       }
@@ -261,6 +301,16 @@
         }
       }
     },
+    "Diagnostics" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnose"
+          }
+        }
+      }
+    },
     "Disconnect" : {
       "localizations" : {
         "de" : {
@@ -301,6 +351,16 @@
         }
       }
     },
+    "Don't miss the moment" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verpass den Moment nicht"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "de" : {
@@ -327,6 +387,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Punkt geben"
+          }
+        }
+      }
+    },
+    "Give a point from the other iPhone while this app is closed, then open this page. The times show how far the push got." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib vom anderen iPhone einen Punkt, während diese App geschlossen ist, und öffne dann diese Seite. Die Zeiten zeigen, wie weit der Push gekommen ist."
           }
         }
       }
@@ -401,6 +471,66 @@
         }
       }
     },
+    "Last background sync" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Sync im Hintergrund"
+          }
+        }
+      }
+    },
+    "Last fallback notification" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Ersatz-Mitteilung"
+          }
+        }
+      }
+    },
+    "Last push processed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Push verarbeitet"
+          }
+        }
+      }
+    },
+    "Last sync" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzter Sync"
+          }
+        }
+      }
+    },
+    "Last wake-up by push" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt per Push geweckt"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später"
+          }
+        }
+      }
+    },
     "Let's keep score. Open this on your iPhone to connect with me on misbehave." : {
       "localizations" : {
         "de" : {
@@ -427,6 +557,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Name"
+          }
+        }
+      }
+    },
+    "Never" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie"
           }
         }
       }
@@ -471,12 +611,22 @@
         }
       }
     },
-    "Not now" : {
+    "Not available" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht jetzt"
+            "value" : "Nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Notification permission" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen erlaubt"
           }
         }
       }
@@ -557,6 +707,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Datenschutz"
+          }
+        }
+      }
+    },
+    "Push registration" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push-Registrierung"
           }
         }
       }
@@ -651,6 +811,16 @@
         }
       }
     },
+    "Setup" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einrichtung"
+          }
+        }
+      }
+    },
     "Sign in to iCloud in the Settings app to connect with a partner." : {
       "localizations" : {
         "de" : {
@@ -667,6 +837,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Status"
+          }
+        }
+      }
+    },
+    "Subscription, accepted invitations" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abo, angenommene Einladungen"
+          }
+        }
+      }
+    },
+    "Subscription, own invitations" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abo, eigene Einladungen"
           }
         }
       }
@@ -821,12 +1011,32 @@
         }
       }
     },
+    "What happened" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was passiert ist"
+          }
+        }
+      }
+    },
     "What is stored" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Was gespeichert wird"
+          }
+        }
+      }
+    },
+    "When your partner gives you a point, your iPhone tells you right away and the widget follows. Without notifications you only see it when you open the app." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn dein Partner dir einen Punkt gibt, meldet sich dein iPhone sofort und das Widget zieht nach. Ohne Mitteilungen siehst du es erst, wenn du die App öffnest."
           }
         }
       }
@@ -997,6 +1207,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "vergeben von %@"
+          }
+        }
+      }
+    },
+    "iCloud" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud"
           }
         }
       }

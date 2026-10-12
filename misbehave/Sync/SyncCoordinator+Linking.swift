@@ -67,35 +67,42 @@ extension SyncCoordinator {
 
     /// One visible push per database, filtered by record type so that only the partner's points
     /// trigger it: the owner hears about `PointFromParticipant`, the participant about `PointFromOwner`.
-    func saveSubscriptions(private savePrivate: Bool, shared saveShared: Bool) async -> (private: Bool, shared: Bool) {
-        func save(_ id: String, recordType: String, in database: CKDatabase) async -> Bool {
+    /// Saving again overwrites, so this is safe to repeat. Returns an error text per database, nil when saved.
+    func saveSubscriptions() async -> (privateError: String?, sharedError: String?) {
+        func save(_ id: String, recordType: String, in database: CKDatabase) async -> String? {
             let subscription = CKDatabaseSubscription(subscriptionID: id)
             subscription.recordType = recordType
             let info = CKSubscription.NotificationInfo()
             info.alertLocalizationKey = PushText.neutralBodyKey
-            info.shouldSendMutableContent = true
             info.soundName = "default"
-            info.collapseIDKey = "points"
+            // Lets the notification extension replace the neutral text with the real one.
+            info.shouldSendMutableContent = true
+            // Also wakes the app, so it can sync and refresh the widget even if the extension fails.
+            info.shouldSendContentAvailable = true
+            info.collapseIDKey = AppModel.pointsNotificationID
             subscription.notificationInfo = info
-            let results = try? await database.modifySubscriptions(saving: [subscription], deleting: [])
-            return (try? results?.saveResults[id]?.get()) != nil
+            do {
+                let results = try await database.modifySubscriptions(saving: [subscription], deleting: [])
+                switch results.saveResults[id] {
+                case .success: return nil
+                case .failure(let error): return InboxRefresher.describe(error)
+                case nil: return "no result"
+                }
+            } catch {
+                return InboxRefresher.describe(error)
+            }
         }
-        var saved = (private: false, shared: false)
-        if savePrivate {
-            saved.private = await save(
-                CloudSchema.SubscriptionID.privateDatabase,
-                recordType: CloudSchema.RecordType.pointFromParticipant,
-                in: container.privateCloudDatabase
-            )
-        }
-        if saveShared {
-            saved.shared = await save(
-                CloudSchema.SubscriptionID.sharedDatabase,
-                recordType: CloudSchema.RecordType.pointFromOwner,
-                in: container.sharedCloudDatabase
-            )
-        }
-        return saved
+        let privateError = await save(
+            CloudSchema.SubscriptionID.privateDatabase,
+            recordType: CloudSchema.RecordType.pointFromParticipant,
+            in: container.privateCloudDatabase
+        )
+        let sharedError = await save(
+            CloudSchema.SubscriptionID.sharedDatabase,
+            recordType: CloudSchema.RecordType.pointFromOwner,
+            in: container.sharedCloudDatabase
+        )
+        return (privateError, sharedError)
     }
 
     /// "Delete all data": removes every connection zone of this account, leaves every shared one

@@ -213,9 +213,43 @@ public struct ZoneInbox: Codable, Sendable, Hashable {
     }
 }
 
+/// What the notification extension did the last time a push arrived. Shown on the diagnostics screen.
+public struct PushRun: Codable, Sendable, Hashable {
+    public var date: Date
+    public var zonesFetched: Int
+    public var zonesFailed: Int
+    public var newEvents: Int
+    public var error: String?
+
+    public init(date: Date = .now, zonesFetched: Int = 0, zonesFailed: Int = 0, newEvents: Int = 0, error: String? = nil) {
+        self.date = date
+        self.zonesFetched = zonesFetched
+        self.zonesFailed = zonesFailed
+        self.newEvents = newEvents
+        self.error = error
+    }
+}
+
+/// What the app knows about its own push setup. Shown on the diagnostics screen.
+public struct AppDiagnostics: Codable, Sendable, Hashable {
+    public var pushTokenAt: Date?
+    public var pushTokenError: String?
+    public var privateSubscriptionAt: Date?
+    public var privateSubscriptionError: String?
+    public var sharedSubscriptionAt: Date?
+    public var sharedSubscriptionError: String?
+    public var lastSyncAt: Date?
+    public var lastBackgroundSyncAt: Date?
+    public var lastWakeByPushAt: Date?
+    public var lastFallbackNotificationAt: Date?
+
+    public init() {}
+}
+
 public struct Inbox: Codable, Sendable, Hashable {
     /// Keyed by connection id.
     public var zones: [String: ZoneInbox] = [:]
+    public var lastRun: PushRun?
 
     public init() {}
 

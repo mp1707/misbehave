@@ -38,13 +38,20 @@ public actor InboxRefresher {
         var inbox = store.loadInbox()
         inbox.prune(against: state)
         var outcome = Outcome()
+        var report = PushRun()
         let container = CKContainer(identifier: containerID)
 
         for connection in state.connections where !connection.isDemo && (side == nil || connection.side == side) {
             if Task.isCancelled { break }
             let database = connection.side == .owner ? container.privateCloudDatabase : container.sharedCloudDatabase
             var zone = inbox.zones[connection.id] ?? ZoneInbox()
-            guard let fetched = await fetch(CloudSchema.zoneID(for: connection), in: database, since: zone.changeToken) else {
+            let fetched: (records: [CKRecord], token: Data?)
+            do {
+                fetched = try await fetch(CloudSchema.zoneID(for: connection), in: database, since: zone.changeToken)
+                report.zonesFetched += 1
+            } catch {
+                report.zonesFailed += 1
+                report.error = Self.describe(error)
                 continue
             }
             for record in fetched.records {
@@ -62,6 +69,8 @@ public actor InboxRefresher {
             inbox.zones[connection.id] = zone
         }
 
+        report.newEvents = outcome.newEventIDs.values.reduce(0) { $0 + $1.count }
+        inbox.lastRun = report
         try? store.saveInbox(inbox)
         var snapshot = state
         snapshot.absorb(inbox)
@@ -73,7 +82,7 @@ public actor InboxRefresher {
         _ zoneID: CKRecordZone.ID,
         in database: CKDatabase,
         since tokenData: Data?
-    ) async -> (records: [CKRecord], token: Data?)? {
+    ) async throws -> (records: [CKRecord], token: Data?) {
         var token = CloudSchema.decodeToken(tokenData)
         var records: [CKRecord] = []
         var retriedExpiredToken = false
@@ -91,10 +100,13 @@ public actor InboxRefresher {
                 retriedExpiredToken = true
                 token = nil
                 records = []
-            } catch {
-                return nil
             }
         }
         return (records, token.flatMap(CloudSchema.encodeToken))
+    }
+
+    public static func describe(_ error: any Error) -> String {
+        let nsError = error as NSError
+        return "\(nsError.domain) \(nsError.code): \(nsError.localizedDescription)"
     }
 }

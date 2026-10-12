@@ -20,6 +20,7 @@ public struct LocalStore: Sendable {
 
     private var stateURL: URL { directory.appendingPathComponent("store.json") }
     private var inboxURL: URL { directory.appendingPathComponent("inbox.json") }
+    private var diagnosticsURL: URL { directory.appendingPathComponent("diagnostics.json") }
 
     public func loadState() -> StoreState {
         read(StoreState.self, from: stateURL) ?? StoreState()
@@ -37,6 +38,14 @@ public struct LocalStore: Sendable {
         try write(inbox, to: inboxURL)
     }
 
+    public func loadDiagnostics() -> AppDiagnostics {
+        read(AppDiagnostics.self, from: diagnosticsURL) ?? AppDiagnostics()
+    }
+
+    public func saveDiagnostics(_ diagnostics: AppDiagnostics) {
+        try? write(diagnostics, to: diagnosticsURL)
+    }
+
     /// The app's state plus whatever the notification extension fetched since.
     public func snapshot() -> StoreState {
         var state = loadState()
@@ -47,6 +56,7 @@ public struct LocalStore: Sendable {
     public func deleteAll() {
         try? FileManager.default.removeItem(at: stateURL)
         try? FileManager.default.removeItem(at: inboxURL)
+        try? FileManager.default.removeItem(at: diagnosticsURL)
     }
 
     private func read<T: Decodable>(_ type: T.Type, from url: URL) -> T? {
