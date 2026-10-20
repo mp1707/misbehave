@@ -30,7 +30,7 @@ Everything is Swift and Apple frameworks, Swift 6 language mode.
 | Part | Path | Role |
 | --- | --- | --- |
 | App | `misbehave/` | SwiftUI UI, `AppModel` (single source of truth), `SyncCoordinator` (CloudKit) |
-| Widget | `MisbehaveWidget/` | Score of one connection, chosen per widget via App Intent; small, medium (both scores) and lock screen |
+| Widget | `MisbehaveWidget/` | Score of one connection, chosen per widget via App Intent, plus the partner's latest note; small, medium (both scores) and lock screen |
 | Notification extension | `MisbehaveNotificationService/` | Rewrites the neutral push into the real text and adds the mascot picture |
 | Shared package | `MisbehaveKit/` | Models, local store, CloudKit schema, push wording, look (colours, mascots, moods), tests |
 | Config | `Config/` | Info.plists, entitlements, `ExportOptions.plist` |
@@ -105,7 +105,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **8**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **9**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash

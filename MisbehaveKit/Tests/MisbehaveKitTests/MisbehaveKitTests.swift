@@ -48,6 +48,16 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(connection.myScore == 1)
     }
 
+    @Test func theWidgetNoteIsTheNewestOneFromThePartner() {
+        let connection = makeConnection(side: .owner, events: [
+            PointEvent(id: "a", from: .participant, delta: 1, comment: "older", createdAt: Date(timeIntervalSince1970: 10)),
+            PointEvent(id: "b", from: .participant, delta: -1, comment: "newer", createdAt: Date(timeIntervalSince1970: 20)),
+            PointEvent(id: "c", from: .participant, delta: 1, createdAt: Date(timeIntervalSince1970: 30)),
+            PointEvent(id: "d", from: .owner, delta: 1, comment: "mine", createdAt: Date(timeIntervalSince1970: 40)),
+        ])
+        #expect(connection.latestReceivedNote?.comment == "newer")
+    }
+
     @Test func aConfirmedCopyClearsTheUnsentFlag() {
         var connection = makeConnection()
         connection.insert(PointEvent(id: "e1", from: .owner, delta: 1, unsent: true))

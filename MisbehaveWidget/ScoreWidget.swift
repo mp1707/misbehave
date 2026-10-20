@@ -66,6 +66,8 @@ struct ScoreEntry: TimelineEntry {
         var score: Int
         var partnerRole: Role
         var partnerScore: Int
+        /// Why the partner gave the newest point that came with a note.
+        var note: String?
 
         var mood: Mood { Mood(score: score) }
         var partnerMood: Mood { Mood(score: partnerScore) }
@@ -85,7 +87,7 @@ struct ScoreEntry: TimelineEntry {
 
 struct ScoreProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> ScoreEntry {
-        ScoreEntry(date: .now, content: .score(.init(id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8)))
+        ScoreEntry(date: .now, content: .score(.init(id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8, note: "You made me breakfast")))
     }
 
     func snapshot(for configuration: SelectConnectionIntent, in context: Context) async -> ScoreEntry {
@@ -116,7 +118,8 @@ struct ScoreProvider: AppIntentTimelineProvider {
             role: connection.myRole,
             score: connection.myScore,
             partnerRole: connection.partnerRole ?? connection.myRole.opposite,
-            partnerScore: connection.partnerScore
+            partnerScore: connection.partnerScore,
+            note: connection.latestReceivedNote?.comment
         )))
     }
 }
@@ -187,15 +190,32 @@ struct ScoreWidgetView: View {
                             .widgetAccentable()
                         Text(verbatim: "\(score.role.label) · \(score.score)")
                             .font(.system(.body, design: .rounded).weight(.semibold))
+                        if let note = score.note {
+                            Text(verbatim: PushText.quoted(note))
+                                .font(.caption)
+                                .lineLimit(1)
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             case .systemMedium:
-                HStack(spacing: 4) {
-                    half(face: score.role.emoji, badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"))
-                    Text(verbatim: "💞")
-                        .font(.system(size: 22))
-                    half(face: score.partnerRole.emoji, badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner))
+                VStack(spacing: 6) {
+                    HStack(spacing: 4) {
+                        half(face: score.role.emoji, badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"), compact: score.note != nil)
+                        Text(verbatim: "💞")
+                            .font(.system(size: 22))
+                        half(face: score.partnerRole.emoji, badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner), compact: score.note != nil)
+                    }
+                    if let note = score.note {
+                        HStack(spacing: 5) {
+                            Text(verbatim: score.partnerRole.emoji)
+                                .font(.caption)
+                            noteLine(note, lineLimit: 1)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(renderingMode == .fullColor ? 0.22 : 0.1), in: .capsule)
+                    }
                 }
                 .foregroundStyle(foreground)
             default:
@@ -203,25 +223,42 @@ struct ScoreWidgetView: View {
                     HStack(alignment: .top, spacing: 4) {
                         Text(verbatim: score.partner)
                             .font(.subheadline.weight(.bold))
-                            .lineLimit(2)
+                            .lineLimit(score.note == nil ? 2 : 1)
+                            .minimumScaleFactor(0.8)
                             .opacity(0.95)
                         Spacer(minLength: 0)
                         sticker(score.role.emoji, badge: score.mood.badge, size: 46)
                     }
                     Spacer(minLength: 0)
-                    Text(score.score, format: .number)
-                        .font(.system(size: 50, weight: .heavy, design: .rounded))
-                        .minimumScaleFactor(0.4)
-                        .lineLimit(1)
-                        .contentTransition(.numericText(value: Double(score.score)))
-                        .widgetAccentable()
-                    Text(verbatim: score.role.label)
-                        .font(.system(.subheadline, design: .rounded).weight(.heavy))
+                    if let note = score.note {
+                        HStack(alignment: .firstTextBaseline, spacing: 5) {
+                            Text(score.score, format: .number)
+                                .font(.system(size: 38, weight: .heavy, design: .rounded))
+                                .minimumScaleFactor(0.4)
+                                .lineLimit(1)
+                                .contentTransition(.numericText(value: Double(score.score)))
+                                .widgetAccentable()
+                            Text(verbatim: score.role.label)
+                                .font(.system(.caption, design: .rounded).weight(.heavy))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
+                        noteLine(note, lineLimit: 2)
+                    } else {
+                        Text(score.score, format: .number)
+                            .font(.system(size: 50, weight: .heavy, design: .rounded))
+                            .minimumScaleFactor(0.4)
+                            .lineLimit(1)
+                            .contentTransition(.numericText(value: Double(score.score)))
+                            .widgetAccentable()
+                        Text(verbatim: score.role.label)
+                            .font(.system(.subheadline, design: .rounded).weight(.heavy))
+                    }
                 }
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(score.partner), \(score.role.label) · \(score.score)"))
+                .accessibilityLabel(Text(verbatim: "\(score.partner), \(score.role.label) · \(score.score)" + (score.note.map { ", " + $0 } ?? "")))
             }
         case .noConnection:
             emptyState("🐾", "pawprint.fill", "No connection", "Open misbehave to connect.")
@@ -230,11 +267,20 @@ struct ScoreWidgetView: View {
         }
     }
 
+    /// The partner's newest note, in quotes, under the score.
+    private func noteLine(_ note: String, lineLimit: Int) -> some View {
+        Text(verbatim: PushText.quoted(note))
+            .font(.system(.caption, design: .rounded).weight(.semibold))
+            .lineLimit(lineLimit)
+            .opacity(0.95)
+    }
+
     /// One person in the wide widget: mascot, score, what the points are called and whose they are.
-    private func half(face: String, badge: String?, score: Int, role: Role, name: Text) -> some View {
+    /// `compact` makes room for the note line below.
+    private func half(face: String, badge: String?, score: Int, role: Role, name: Text, compact: Bool = false) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
-                sticker(face, badge: badge, size: 50)
+                sticker(face, badge: badge, size: compact ? 42 : 50)
                 Text(score, format: .number)
                     .font(.system(size: 42, weight: .heavy, design: .rounded))
                     .minimumScaleFactor(0.4)
@@ -244,7 +290,7 @@ struct ScoreWidgetView: View {
             }
             Text(verbatim: role.label)
                 .font(.system(.subheadline, design: .rounded).weight(.heavy))
-                .padding(.top, 8)
+                .padding(.top, compact ? 2 : 8)
             name
                 .font(.caption.weight(.semibold))
                 .lineLimit(1)

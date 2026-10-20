@@ -128,6 +128,11 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
 
     public var hasUnsentEvents: Bool { events.contains(where: \.unsent) }
 
+    /// The newest point the partner gave that came with a note; the widget shows it.
+    public var latestReceivedNote: PointEvent? {
+        events.filter { $0.from == side.other && !$0.comment.isEmpty }.max { $0.createdAt < $1.createdAt }
+    }
+
     public func containsEvent(_ id: String) -> Bool {
         events.contains { $0.id == id }
     }
