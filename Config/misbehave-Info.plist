@@ -4,6 +4,17 @@
 <dict>
 	<key>CKSharingSupported</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.mp17.mpapps.misbehave</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>misbehave</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

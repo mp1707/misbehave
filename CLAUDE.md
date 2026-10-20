@@ -31,7 +31,7 @@ Everything is Swift and Apple frameworks, Swift 6 language mode.
 | Part | Path | Role |
 | --- | --- | --- |
 | App | `misbehave/` | SwiftUI UI, `AppModel` (single source of truth), `SyncCoordinator` (CloudKit) |
-| Widget | `MisbehaveWidget/` | Score of one connection, chosen per widget via App Intent, plus the partner's latest note; small, medium (both scores) and lock screen |
+| Widget | `MisbehaveWidget/` | Per connection, chosen via App Intent: "Your points" (small, medium, all lock screen sizes), "Both scores" and "Latest note" (lock screen), and the "Give a point" / "Take a point" controls (lock screen corners, Control Center) |
 | Notification extension | `MisbehaveNotificationService/` | Rewrites the neutral push into the real text and adds the mascot picture |
 | Shared package | `MisbehaveKit/` | Models, local store, CloudKit schema, push wording, look (colours, mascots, moods), tests |
 | Config | `Config/` | Info.plists, entitlements, `ExportOptions.plist` |
@@ -110,7 +110,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **10**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **11**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
@@ -138,11 +138,13 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 - The Swift name `oneTimeURL(for:)` is marked iOS 26 in the SDK; the code calls `__oneTimeURL(forParticipantID:)`, available since iOS 18.
 - When CloudKit crashes or misbehaves without an error, run the steps one by one from a debug build on the connected iPhone and print each result (`xcrun devicectl device process launch --console …`); crash logs can be pulled with `devicectl device copy from --domain-type systemCrashLogs`.
 - Never call `CKSyncEngine.sendChanges`/`fetchChanges` from a plain `Task` started inside a delegate callback: the task inherits the callback's context and the engine traps (`…cannot_guarantee_serial_delegate_callbacks…`). Use `Task.detached`.
+- A point always needs a note, so the controls never send one: they open `misbehave://connection/<id>?point=plus|minus` (`AppConfig.pointURL`) through `OpenURLIntent`, and the connection page opens its note sheet. The `misbehave` scheme is registered in the app's Info.plist for that.
 - The demo connection is local only and mirrors every tap; it exists so the app and its notification can be tried alone (also for App Review).
 
 ## Open
 
 - Not yet seen on two real iPhones: a look changed on one phone reaching the other, its widget and the notification picture.
+- Not yet seen on a real iPhone: tapping a point control on the lock screen opening the note sheet (the link itself is tested in the simulator).
 
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.

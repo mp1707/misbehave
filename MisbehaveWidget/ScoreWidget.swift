@@ -70,6 +70,8 @@ struct ScoreEntry: TimelineEntry {
         var partnerMascot: String
         /// Why the partner gave the newest point that came with a note.
         var note: String?
+        /// That point: +1 or −1.
+        var noteDelta: Int?
         /// The connection's shared look.
         var look: Look
 
@@ -95,7 +97,7 @@ struct ScoreProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> ScoreEntry {
         ScoreEntry(date: .now, content: .score(.init(
             id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8,
-            mascot: Role.goodgirl.emoji, partnerMascot: Role.goodboy.emoji, note: "You made me breakfast", look: Look()
+            mascot: Role.goodgirl.emoji, partnerMascot: Role.goodboy.emoji, note: "You made me breakfast", noteDelta: 1, look: Look()
         )))
     }
 
@@ -132,6 +134,7 @@ struct ScoreProvider: AppIntentTimelineProvider {
             mascot: connection.myMascot,
             partnerMascot: connection.partnerMascot,
             note: connection.latestReceivedNote?.comment,
+            noteDelta: connection.latestReceivedNote?.delta,
             look: connection.look
         )), appLook: state.look)
     }
@@ -187,27 +190,35 @@ struct ScoreWidgetView: View {
                     Image(systemName: score.role.symbolName)
                 }
             case .accessoryCircular:
-                VStack(spacing: -1) {
-                    Image(systemName: score.role.symbolName)
-                        .font(.system(size: 13))
-                    Text(score.score, format: .number)
-                        .font(look.font(.title2, weight: .heavy))
-                        .minimumScaleFactor(0.5)
-                        .widgetAccentable()
+                ZStack {
+                    AccessoryWidgetBackground()
+                    VStack(spacing: -1) {
+                        Image(systemName: score.role.symbolName)
+                            .font(.system(size: 13))
+                        Text(score.score, format: .number)
+                            .font(look.font(.title2, weight: .heavy))
+                            .minimumScaleFactor(0.5)
+                            .widgetAccentable()
+                    }
+                    .padding(4)
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: PushText.points(score.score, role: score.role)))
             case .accessoryRectangular:
                 HStack(spacing: 8) {
                     Image(systemName: score.role.symbolName)
-                        .font(.title2)
+                        .font(.system(size: 22, weight: .semibold))
+                        .frame(width: 26)
                         .widgetAccentable()
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: score.partner)
                             .font(look.font(.headline, weight: .semibold))
+                            .lineLimit(1)
                             .widgetAccentable()
                         Text(verbatim: PushText.points(score.score, role: score.role))
                             .font(look.font(.body, weight: .semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                         if let note = score.note {
                             Text(verbatim: PushText.quoted(note))
                                 .font(look.font(.caption))
@@ -372,5 +383,9 @@ struct ScoreWidget: Widget {
 struct MisbehaveWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScoreWidget()
+        DuoWidget()
+        NoteWidget()
+        GivePointControl()
+        TakePointControl()
     }
 }

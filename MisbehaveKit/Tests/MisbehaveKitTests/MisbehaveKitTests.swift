@@ -182,6 +182,15 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(other.recordID.recordName == "participant")
     }
 
+    @Test func pointLinksCarryTheConnectionAndTheDirection() throws {
+        let plus = try #require(AppConfig.pointURL(id: "conn-ABC", delta: 1))
+        let minus = try #require(AppConfig.pointURL(id: "conn-ABC", delta: -1))
+        #expect(AppConfig.connectionID(from: plus) == "conn-ABC")
+        #expect(AppConfig.pointRequest(from: plus) == 1)
+        #expect(AppConfig.pointRequest(from: minus) == -1)
+        #expect(AppConfig.pointRequest(from: try #require(AppConfig.connectionURL(id: "conn-ABC"))) == nil)
+    }
+
     @Test func connectionLinksRoundTrip() throws {
         let url = try #require(AppConfig.connectionURL(id: "conn-ABC"))
         #expect(AppConfig.connectionID(from: url) == "conn-ABC")

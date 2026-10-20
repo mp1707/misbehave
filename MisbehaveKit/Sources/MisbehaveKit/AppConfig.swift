@@ -19,6 +19,23 @@ public enum AppConfig {
         return components.url
     }
 
+    /// Opens a connection with the note sheet for a point already up; used by the lock screen controls.
+    public static func pointURL(id: String, delta: Int) -> URL? {
+        guard var components = connectionURL(id: id).flatMap({ URLComponents(url: $0, resolvingAgainstBaseURL: false) }) else { return nil }
+        components.queryItems = [URLQueryItem(name: "point", value: delta < 0 ? "minus" : "plus")]
+        return components.url
+    }
+
+    /// +1 or −1 when the link asks for a point, else nil.
+    public static func pointRequest(from url: URL) -> Int? {
+        let value = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first { $0.name == "point" }?.value
+        switch value {
+        case "plus": return 1
+        case "minus": return -1
+        default: return nil
+        }
+    }
+
     public static func connectionID(from url: URL) -> String? {
         guard url.scheme == urlScheme, url.host() == "connection" else { return nil }
         let id = url.lastPathComponent

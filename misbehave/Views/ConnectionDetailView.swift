@@ -172,6 +172,8 @@ private struct ActiveConnectionView: View {
         .emojiBurst(on: connection.partnerScore, extra: [look.burst.treat(for: partnerRole)])
         .animation(.snappy, value: connection.partnerScore)
         .sensoryFeedback(trigger: connection.partnerScore) { old, new in new > old ? .increase : .decrease }
+        .onAppear(perform: takePendingPoint)
+        .onChange(of: model.pendingPoint) { takePendingPoint() }
         .sheet(item: $composing) { point in
             PointNoteSheet(delta: point.delta, partnerName: connection.partnerDisplayName, partnerRole: partnerRole, partnerMascot: connection.partnerMascot) { note in
                 model.givePoint(point.delta, comment: note, in: connection.id)
@@ -184,6 +186,13 @@ private struct ActiveConnectionView: View {
         } else if connection.hasUnsentEvents {
             footnote("Saved on this iPhone. Your partner gets it as soon as iCloud is reachable.", systemImage: "icloud.slash")
         }
+    }
+
+    /// A lock screen control opened the app for a point: ask for the note right away.
+    private func takePendingPoint() {
+        guard let pending = model.pendingPoint, pending.connectionID == connection.id else { return }
+        model.pendingPoint = nil
+        composing = Composing(delta: pending.delta)
     }
 
     private func footnote(_ text: LocalizedStringKey, systemImage: String) -> some View {
