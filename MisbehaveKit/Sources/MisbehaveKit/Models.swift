@@ -22,14 +22,24 @@ public struct PointEvent: Codable, Sendable, Hashable, Identifiable {
     public var id: String
     public var from: Side
     public var delta: Int
+    /// Why the point was given. Required for new points; empty for points from before notes existed.
+    public var comment: String
     public var createdAt: Date
     /// Written locally but not yet confirmed by CloudKit.
     public var unsent: Bool
 
-    public init(id: String = UUID().uuidString, from: Side, delta: Int, createdAt: Date = .now, unsent: Bool = false) {
+    public init(
+        id: String = UUID().uuidString,
+        from: Side,
+        delta: Int,
+        comment: String = "",
+        createdAt: Date = .now,
+        unsent: Bool = false
+    ) {
         self.id = id
         self.from = from
         self.delta = delta
+        self.comment = comment
         self.createdAt = createdAt
         self.unsent = unsent
     }
@@ -39,6 +49,7 @@ public struct PointEvent: Codable, Sendable, Hashable, Identifiable {
         id = try container.decode(String.self, forKey: .id)
         from = try container.decode(Side.self, forKey: .from)
         delta = try container.decode(Int.self, forKey: .delta)
+        comment = try container.decodeIfPresent(String.self, forKey: .comment) ?? ""
         createdAt = try container.decode(Date.self, forKey: .createdAt)
         unsent = try container.decodeIfPresent(Bool.self, forKey: .unsent) ?? false
     }
@@ -62,6 +73,8 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
     public var myName: String
     public var partnerRole: Role?
     public var partnerName: String?
+    /// What this person calls the partner here. Stays on this iPhone; the partner never sees it.
+    public var partnerNickname: String?
     public var inviteURL: URL?
     public var createdAt: Date
     public var events: [PointEvent]
@@ -80,6 +93,7 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
         myName: String,
         partnerRole: Role? = nil,
         partnerName: String? = nil,
+        partnerNickname: String? = nil,
         inviteURL: URL? = nil,
         createdAt: Date = .now,
         events: [PointEvent] = [],
@@ -95,6 +109,7 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
         self.myName = myName
         self.partnerRole = partnerRole
         self.partnerName = partnerName
+        self.partnerNickname = partnerNickname
         self.inviteURL = inviteURL
         self.createdAt = createdAt
         self.events = events
@@ -242,6 +257,10 @@ public struct AppDiagnostics: Codable, Sendable, Hashable {
     public var lastBackgroundSyncAt: Date?
     public var lastWakeByPushAt: Date?
     public var lastFallbackNotificationAt: Date?
+    /// Last time a point went to iCloud together with its note.
+    public var lastCommentSavedAt: Date?
+    /// Set when iCloud refused the note, e.g. because the schema in Production lacks the field.
+    public var commentError: String?
 
     public init() {}
 }

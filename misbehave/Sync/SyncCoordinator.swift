@@ -197,6 +197,7 @@ final class SyncCoordinator: CKSyncEngineDelegate {
                 if let again = model.profileSettled(record) { queueProfile(of: again) }
             } else {
                 model.pointUploaded(record.recordID)
+                if CloudSchema.hasComment(record) { model.commentSaved() }
             }
         }
         if !sent.savedRecords.isEmpty { model.quotaExceeded = false }
@@ -220,6 +221,13 @@ final class SyncCoordinator: CKSyncEngineDelegate {
                 }
             case .zoneNotFound, .userDeletedZone:
                 model.zoneDisappeared(record.recordID.zoneID, side: side)
+            case let code where (code == .serverRejectedRequest || code == .invalidArguments)
+                && !isProfile && CloudSchema.hasComment(record):
+                // Most likely the Production schema has no comment field yet. The point matters more
+                // than its note, so it goes out again without one.
+                model.commentRejected(failure.error)
+                engine.state.add(pendingRecordZoneChanges: [.saveRecord(record.recordID)])
+                scheduleSend(side)
             case .quotaExceeded:
                 // Stays marked unsent and is queued again the next time the app opens.
                 model.quotaExceeded = true

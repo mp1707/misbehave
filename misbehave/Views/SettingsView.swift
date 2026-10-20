@@ -125,7 +125,7 @@ struct PrivacyView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                paragraph("🗂️", "What is stored", "Your role, the name you entered and one entry for every point you give or take away. Nothing else.")
+                paragraph("🗂️", "What is stored", "Your role, the name you entered, the names you give your partners and one entry for every point you give or take away, with its note. Nothing else.")
                 paragraph("☁️", "Where it is stored", "On your iPhone and in iCloud. Each connection lives in the iCloud account of the person who sent the invitation and is shared only with the one partner who accepted it.")
                 paragraph("👀", "Who can see it", "You and the partner of that connection. The developer has no server and cannot see any of it. There is no tracking, no advertising and no analytics.")
                 paragraph("🧹", "How to delete it", "Disconnect removes one connection with all its points for both of you. \"Delete all data\" in Settings removes everything.")
@@ -184,6 +184,7 @@ struct DiagnosticsView: View {
                     detail: pushRun.map { String(localized: "\($0.newEvents) new, \($0.zonesFailed) failed") }
                 )
                 row("Last fallback notification", date: diagnostics.lastFallbackNotificationAt)
+                row("Last point sent with its note", date: diagnostics.lastCommentSavedAt, error: diagnostics.commentError)
             } header: {
                 Text("What happened")
             } footer: {

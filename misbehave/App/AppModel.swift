@@ -29,6 +29,9 @@ final class AppModel {
     private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
     private(set) var isAcceptingInvite = false
     var quotaExceeded = false
+    /// iCloud refused a note this launch, most likely because the Production schema lacks the field.
+    /// Points then go out without their note so they still arrive; the next launch tries again.
+    @ObservationIgnored private(set) var cloudRejectsComments = false
     private var notificationStatusIsKnown = false
     private var notificationPromptSnoozed = false
     private(set) var diagnostics: AppDiagnostics
@@ -209,9 +212,9 @@ final class AppModel {
             partnerRole: profile.role.opposite,
             partnerName: String(localized: "Demo partner"),
             events: [
-                PointEvent(from: .participant, delta: 1),
-                PointEvent(from: .participant, delta: 1),
-                PointEvent(from: .owner, delta: 1),
+                PointEvent(from: .participant, delta: 1, comment: String(localized: "Thanks for trying me out"), createdAt: .now.addingTimeInterval(-120)),
+                PointEvent(from: .participant, delta: 1, comment: String(localized: "You look cute today"), createdAt: .now.addingTimeInterval(-60)),
+                PointEvent(from: .owner, delta: 1, comment: String(localized: "Hello, demo partner"), createdAt: .now.addingTimeInterval(-30)),
             ]
         )
         mutate { $0.connections.append(demo) }
@@ -311,15 +314,26 @@ final class AppModel {
         }
     }
 
+    /// A name only this person sees, e.g. a pet name that belongs to this one couple. Empty brings back the partner's own name.
+    func renamePartner(in id: String, to nickname: String) {
+        let nickname = AppConfig.cleanName(nickname)
+        mutate { state in
+            guard let index = state.connections.firstIndex(where: { $0.id == id }) else { return }
+            state.connections[index].partnerNickname = nickname.isEmpty ? nil : nickname
+        }
+    }
+
     func dismissNotice(_ notice: EndedNotice) {
         mutate { $0.notices.removeAll { $0.id == notice.id } }
     }
 
     // MARK: Points
 
-    func givePoint(_ delta: Int, in id: String) {
-        guard let connection = connection(id), connection.phase == .active else { return }
-        let event = PointEvent(from: connection.side, delta: delta, unsent: !connection.isDemo)
+    /// Every point carries a note, so the partner knows what it was for.
+    func givePoint(_ delta: Int, comment: String, in id: String) {
+        let comment = AppConfig.cleanComment(comment)
+        guard !comment.isEmpty, let connection = connection(id), connection.phase == .active else { return }
+        let event = PointEvent(from: connection.side, delta: delta, comment: comment, unsent: !connection.isDemo)
         mutate { state in
             guard let index = state.connections.firstIndex(where: { $0.id == id }) else { return }
             state.connections[index].insert(event)
@@ -343,14 +357,22 @@ final class AppModel {
             mutate { state in
                 guard let index = state.connections.firstIndex(where: { $0.id == Self.demoID }) else { return }
                 for delta in deltas {
-                    state.connections[index].insert(PointEvent(from: demo.side.other, delta: delta))
+                    state.connections[index].insert(PointEvent(from: demo.side.other, delta: delta, comment: Self.demoComment(for: delta)))
                 }
             }
             guard notificationStatus == .authorized || notificationStatus == .provisional else { return }
-            let content = UNMutableNotificationContent()
-            content.title = demo.partnerDisplayName
             let delta = deltas.reduce(0, +)
-            content.body = PushText.phrase(delta: delta, role: demo.myRole)
+            let summary = PointSummary(
+                connectionID: demo.id,
+                partnerName: demo.partnerDisplayName,
+                role: demo.myRole,
+                delta: delta,
+                comments: deltas.map(Self.demoComment(for:))
+            )
+            guard let text = PushText.content(for: [summary]) else { return }
+            let content = UNMutableNotificationContent()
+            content.title = text.title ?? demo.partnerDisplayName
+            content.body = text.body
             content.sound = .default
             if let sticker = NotificationSticker.attachment(role: demo.myRole, delta: delta) {
                 content.attachments = [sticker]
@@ -360,6 +382,12 @@ final class AppModel {
                 UNNotificationRequest(identifier: Self.demoNotificationID, content: content, trigger: nil)
             )
         }
+    }
+
+    private static func demoComment(for delta: Int) -> String {
+        delta > 0
+            ? [String(localized: "Right back at you"), String(localized: "You're the sweetest"), String(localized: "Aww, thank you")].randomElement()!
+            : [String(localized: "Two can play that game"), String(localized: "Hmpf."), String(localized: "Fine, then you too")].randomElement()!
     }
 
     // MARK: Notifications
@@ -546,7 +574,7 @@ final class AppModel {
         mutate { state in
             state.connections.removeAll { $0.id == id }
             if connection.phase == .active {
-                state.notices.append(EndedNotice(id: id, partnerName: connection.partnerName))
+                state.notices.append(EndedNotice(id: id, partnerName: connection.partnerShownName))
             }
         }
         if deleteZone { sync.queueRemoval(of: connection) }
@@ -581,6 +609,19 @@ final class AppModel {
     }
 
     // MARK: Results of uploads
+
+    /// iCloud refused a point that carried a note; from now on points go out without one until the next launch.
+    func commentRejected(_ error: CKError) {
+        cloudRejectsComments = true
+        noteDiagnostics { $0.commentError = InboxRefresher.describe(error) }
+    }
+
+    func commentSaved() {
+        noteDiagnostics {
+            $0.lastCommentSavedAt = .now
+            $0.commentError = nil
+        }
+    }
 
     func pointUploaded(_ recordID: CKRecord.ID) {
         mutate { state in
@@ -633,7 +674,7 @@ final class AppModel {
             )
         }
         guard let event = connection.events.first(where: { $0.id == recordID.recordName && $0.from == side }) else { return nil }
-        return CloudSchema.pointRecord(event, in: recordID.zoneID)
+        return CloudSchema.pointRecord(event, in: recordID.zoneID, includingComment: !cloudRejectsComments)
     }
 }
 

@@ -1,12 +1,14 @@
 # misbehave
 
-iPhone app for couples. Two people link their iPhones and give each other points: +1 when something was nice, −1 when not. The partner gets a push right then ("You received +1 goodgirl point") and sees the score in a widget. The moment is the product: a point that arrives late or silently has missed its purpose, so **push and widget freshness matter more than anything else in the app**.
+iPhone app for couples. Two people link their iPhones and give each other points: +1 when something was nice, −1 when not. Every point needs a short note saying why. The partner gets a push right then ("You received +1 goodgirl point" plus the note) and sees the score in a widget. The moment is the product: a point that arrives late or silently has missed its purpose, so **push and widget freshness matter more than anything else in the app**.
 
 - Each person picks a role, `goodgirl` or `goodboy` (shown untranslated). It names the points they collect.
 - A person can have several connections; each has its own score, strictly separate.
+- Each connection shows its history below the buttons: every point with its note, chat-style (partner's on the left under their mascot, own on the right), grouped by day.
+- A person can give the partner a nickname per connection (pet names differ between couples). It is local only (`Connection.partnerNickname`) and wins over the partner's own name everywhere on that iPhone: list, widget, push.
 - Free, no accounts, no own server, no ads, no tracking, no third-party code.
 - It is a cozy little toy, not a utility: **girls are cats 🐱, boys are dogs 🐶, and everyone is pink** (never blue for boys). Mascots are emoji; no image assets.
-- Not in scope for v1: rewards, streaks, a history UI, iPad/Mac, more than two people per connection.
+- Not in scope for v1: rewards, streaks, iPad/Mac, more than two people per connection.
 
 Bundle ID `com.mp17.mpapps.misbehave`, iPhone only, iOS 18+, English only (no translations and no language switch for now). Original plan (German, working title "Goodgirl/Goodboy"): https://claude.ai/code/artifact/c22d5ca8-3c7b-40b4-be29-318d8353497c (a Claude Doc; read it with the docs connector).
 
@@ -59,10 +61,11 @@ Container `iCloud.com.mp17.mpapps.misbehave`. **A connection is a record zone** 
 | Record type | Record name | Fields |
 | --- | --- | --- |
 | `Profile` | `owner` or `participant` | `role`, `displayName` |
-| `PointFromOwner` | event id | `delta` (+1/−1), `createdAt` |
-| `PointFromParticipant` | event id | `delta` (+1/−1), `createdAt` |
+| `PointFromOwner` | event id | `delta` (+1/−1), `createdAt`, `comment` (String) |
+| `PointFromParticipant` | event id | `delta` (+1/−1), `createdAt`, `comment` (String) |
 
 - Points are immutable events; a score is the sum of the other side's deltas. No counters, so no sync conflicts.
+- `comment` is required in the UI but optional in the data (older points have none). If iCloud rejects a point because of the note (Production schema without the field), the app resends it without the note for the rest of that launch, so the point still arrives; Diagnose shows the error.
 - Which side a device is follows from the database the zone is in: private = owner, shared = participant. No local person id.
 - Connections are always identified by zone id, never by name.
 - Sync runs through two `CKSyncEngine` instances (private and shared). Invitations, accepting, subscriptions and "delete all" talk to CloudKit directly because they need the network right now.
@@ -102,7 +105,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **6**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **7**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
@@ -132,6 +135,8 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 - The demo connection is local only and mirrors every tap; it exists so the app and its notification can be tried alone (also for App Review).
 
 ## Open
+
+- The `comment` field on `PointFromOwner` and `PointFromParticipant` must be added in Development (Console → Record Types → add field, String) and deployed to Production. Until then TestFlight points arrive without their note.
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.
 - Never exercised on real devices: the owner detecting that the partner left (read from the share's participant list), "delete all data" against iCloud, account switch.

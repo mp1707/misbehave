@@ -9,6 +9,7 @@ public enum AppConfig {
     /// `userInfo` key the notification extension sets when a push belongs to exactly one connection.
     public static let connectionUserInfoKey = "connectionID"
     public static let maxNameLength = 40
+    public static let maxCommentLength = 160
 
     public static func connectionURL(id: String) -> URL? {
         var components = URLComponents()
@@ -27,5 +28,12 @@ public enum AppConfig {
     public static func cleanName(_ raw: String?) -> String {
         let trimmed = (raw ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         return String(trimmed.prefix(maxNameLength))
+    }
+
+    /// One line, trimmed and capped, so a note always fits a notification and a history bubble.
+    public static func cleanComment(_ raw: String?) -> String {
+        let oneLine = (raw ?? "").components(separatedBy: .newlines).joined(separator: " ")
+        let trimmed = oneLine.trimmingCharacters(in: .whitespaces)
+        return String(trimmed.prefix(maxCommentLength))
     }
 }

@@ -7,12 +7,15 @@ public struct PointSummary: Sendable, Equatable {
     /// The receiving person's role in this connection.
     public var role: Role
     public var delta: Int
+    /// The notes of these points, oldest first.
+    public var comments: [String]
 
-    public init(connectionID: String, partnerName: String?, role: Role, delta: Int) {
+    public init(connectionID: String, partnerName: String?, role: Role, delta: Int, comments: [String] = []) {
         self.connectionID = connectionID
         self.partnerName = partnerName
         self.role = role
         self.delta = delta
+        self.comments = comments
     }
 }
 
@@ -30,18 +33,25 @@ extension StoreState {
             guard !unseen.isEmpty else { return nil }
             return PointSummary(
                 connectionID: connection.id,
-                partnerName: connection.partnerName,
+                partnerName: connection.partnerShownName,
                 role: connection.myRole,
-                delta: unseen.reduce(0) { $0 + $1.delta }
+                delta: unseen.reduce(0) { $0 + $1.delta },
+                comments: unseen.sorted { $0.createdAt < $1.createdAt }.map(\.comment).filter { !$0.isEmpty }
             )
         }
     }
 }
 
 extension Connection {
-    public var partnerDisplayName: String {
+    /// The nickname this person gave the partner, else the partner's own name; nil if neither is known.
+    public var partnerShownName: String? {
+        if let partnerNickname, !partnerNickname.isEmpty { return partnerNickname }
         if let partnerName, !partnerName.isEmpty { return partnerName }
-        return PushText.partnerFallback
+        return nil
+    }
+
+    public var partnerDisplayName: String {
+        partnerShownName ?? PushText.partnerFallback
     }
 }
 
@@ -68,15 +78,24 @@ public enum PushText {
         return format(key, name, signed(delta), role.label) + " " + role.reaction(toDelta: delta)
     }
 
+    /// A note as it appears under the points: “made me coffee”.
+    public static func quoted(_ comment: String) -> String {
+        "\u{201C}\(comment)\u{201D}"
+    }
+
     /// Title and body for a notification covering the given connections; nil when there is nothing to say.
+    /// The notes follow the points, so the person knows right away what they were for.
     public static func content(for summaries: [PointSummary]) -> (title: String?, body: String)? {
         guard let first = summaries.first else { return nil }
         if summaries.count == 1 {
             let name = first.partnerName.flatMap { $0.isEmpty ? nil : $0 }
-            return (name, phrase(delta: first.delta, role: first.role))
+            let lines = [phrase(delta: first.delta, role: first.role)] + first.comments.map(quoted)
+            return (name, lines.joined(separator: "\n"))
         }
         let lines = summaries.map {
-            line(name: $0.partnerName.flatMap { $0.isEmpty ? nil : $0 } ?? partnerFallback, delta: $0.delta, role: $0.role)
+            var text = line(name: $0.partnerName.flatMap { $0.isEmpty ? nil : $0 } ?? partnerFallback, delta: $0.delta, role: $0.role)
+            if $0.comments.count == 1 { text += " " + quoted($0.comments[0]) }
+            return text
         }
         return (nil, lines.joined(separator: "\n"))
     }

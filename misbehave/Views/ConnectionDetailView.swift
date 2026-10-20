@@ -5,13 +5,18 @@ struct ConnectionDetailView: View {
     @Environment(AppModel.self) private var model
     var connectionID: String
     @State private var confirmsDisconnect = false
+    @State private var isRenaming = false
+    @State private var nickname = ""
 
     var body: some View {
         if let connection = model.connection(connectionID) {
             ScrollView {
                 VStack(spacing: 18) {
                     switch connection.phase {
-                    case .active: ActiveConnectionView(connection: connection)
+                    case .active:
+                        ActiveConnectionView(connection: connection)
+                        HistoryView(connection: connection)
+                            .padding(.top, 8)
                     case .inviting: PendingInvitationView(connection: connection)
                     }
                 }
@@ -24,11 +29,26 @@ struct ConnectionDetailView: View {
                 if connection.phase == .active {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu("More", systemImage: "ellipsis.circle") {
+                            Button("Rename", systemImage: "pencil") {
+                                nickname = connection.partnerNickname ?? ""
+                                isRenaming = true
+                            }
                             Button(connection.isDemo ? "Remove demo" : "Disconnect", systemImage: "xmark.circle", role: .destructive) {
                                 confirmsDisconnect = true
                             }
                         }
                     }
+                }
+            }
+            .alert("Rename", isPresented: $isRenaming) {
+                TextField(connection.partnerName ?? String(localized: "Name"), text: $nickname)
+                Button("Save") { model.renamePartner(in: connection.id, to: nickname) }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                if let name = connection.partnerName, !name.isEmpty {
+                    Text("What do you call \(name) here? Only you see this name. Leave it empty to use \(name).")
+                } else {
+                    Text("What do you call your partner here? Only you see this name.")
                 }
             }
             .confirmationDialog(
@@ -54,6 +74,13 @@ struct ConnectionDetailView: View {
 private struct ActiveConnectionView: View {
     @Environment(AppModel.self) private var model
     var connection: Connection
+    /// The point waiting for its note.
+    @State private var composing: Composing?
+
+    private struct Composing: Identifiable {
+        var delta: Int
+        var id: Int { delta }
+    }
 
     private var myMood: Mood { Mood(score: connection.myScore) }
     private var partnerMood: Mood { Mood(score: connection.partnerScore) }
@@ -121,10 +148,10 @@ private struct ActiveConnectionView: View {
             .accessibilityElement(children: .combine)
             HStack(spacing: 14) {
                 PointButton(systemImage: "minus", label: "Take a point away", role: partnerRole, filled: false) {
-                    model.givePoint(-1, in: connection.id)
+                    composing = Composing(delta: -1)
                 }
                 PointButton(systemImage: "plus", label: "Give a point", role: partnerRole, filled: true) {
-                    model.givePoint(1, in: connection.id)
+                    composing = Composing(delta: 1)
                 }
             }
         }
@@ -134,6 +161,11 @@ private struct ActiveConnectionView: View {
         .emojiBurst(on: connection.partnerScore, up: ["💕", "💖", connection.partnerRole == .goodgirl ? "🐟" : "🦴"], down: ["💔", "💧"])
         .animation(.snappy, value: connection.partnerScore)
         .sensoryFeedback(trigger: connection.partnerScore) { old, new in new > old ? .increase : .decrease }
+        .sheet(item: $composing) { point in
+            PointNoteSheet(delta: point.delta, partnerName: connection.partnerDisplayName, partnerRole: partnerRole) { note in
+                model.givePoint(point.delta, comment: note, in: connection.id)
+            }
+        }
 
         if connection.isDemo {
             footnote("The demo partner mirrors what you do. Nothing here leaves your iPhone.", systemImage: "wand.and.stars")

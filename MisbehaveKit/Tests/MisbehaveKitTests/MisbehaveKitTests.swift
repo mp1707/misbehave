@@ -73,6 +73,12 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(store.loadState() == state)
     }
 
+    @Test func olderEventsWithoutANoteStillLoad() throws {
+        let json = #"{"id":"e1","from":"owner","delta":1,"createdAt":0}"#
+        let event = try JSONDecoder().decode(PointEvent.self, from: Data(json.utf8))
+        #expect(event.comment == "")
+    }
+
     @Test func aMissingFileIsAnEmptyState() {
         #expect(temporaryStore().loadState() == StoreState())
     }
@@ -126,6 +132,25 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(CloudSchema.event(from: record) == event)
     }
 
+    @Test func aNoteTravelsWithThePoint() {
+        let event = PointEvent(id: "e2", from: .owner, delta: 1, comment: "made me coffee", createdAt: Date(timeIntervalSince1970: 1000))
+        let record = CloudSchema.pointRecord(event, in: zoneID)
+        #expect(CloudSchema.hasComment(record))
+        #expect(CloudSchema.event(from: record) == event)
+    }
+
+    @Test func aPointCanGoOutWithoutItsNote() {
+        let event = PointEvent(id: "e3", from: .owner, delta: -1, comment: "late again")
+        let record = CloudSchema.pointRecord(event, in: zoneID, includingComment: false)
+        #expect(!CloudSchema.hasComment(record))
+        #expect(CloudSchema.event(from: record)?.comment == "")
+    }
+
+    @Test func notesAreOneTrimmedLine() {
+        #expect(AppConfig.cleanComment("  so\nsweet \n") == "so sweet")
+        #expect(AppConfig.cleanComment(String(repeating: "a", count: 500)).count == AppConfig.maxCommentLength)
+    }
+
     @Test func deltasOtherThanOneAreIgnored() {
         let record = CKRecord(recordType: "PointFromOwner", recordID: CKRecord.ID(recordName: "e1", zoneID: zoneID))
         record["delta"] = Int64(500)
@@ -170,6 +195,20 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         let content = PushText.content(for: [PointSummary(connectionID: "a", partnerName: "Anna", role: .goodboy, delta: 2)])
         #expect(content?.title == "Anna")
         #expect(content?.body == "You received +2 goodboy points 🐶🦴")
+    }
+
+    @Test func theNotesFollowThePoints() {
+        let content = PushText.content(for: [PointSummary(connectionID: "a", partnerName: "Anna", role: .goodgirl, delta: 2, comments: ["coffee", "flowers"])])
+        #expect(content?.body == "You received +2 goodgirl points 😻\n\u{201C}coffee\u{201D}\n\u{201C}flowers\u{201D}")
+    }
+
+    @Test func aNicknameWinsOverThePartnersOwnName() {
+        var connection = makeConnection()
+        #expect(connection.partnerDisplayName == "Anna")
+        connection.partnerNickname = "Bunny"
+        #expect(connection.partnerDisplayName == "Bunny")
+        connection.partnerNickname = ""
+        #expect(connection.partnerShownName == "Anna")
     }
 
     @Test func severalConnectionsGetALineEach() {

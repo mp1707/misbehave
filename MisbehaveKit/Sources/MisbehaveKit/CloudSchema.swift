@@ -17,6 +17,7 @@ public enum CloudSchema {
         public static let displayName = "displayName"
         public static let delta = "delta"
         public static let createdAt = "createdAt"
+        public static let comment = "comment"
     }
 
     public enum SubscriptionID {
@@ -56,14 +57,22 @@ public enum CloudSchema {
         side == .owner ? RecordType.pointFromOwner : RecordType.pointFromParticipant
     }
 
-    public static func pointRecord(_ event: PointEvent, in zoneID: CKRecordZone.ID) -> CKRecord {
+    /// `includingComment: false` leaves the note out, for when the server's schema does not know the field yet.
+    public static func pointRecord(_ event: PointEvent, in zoneID: CKRecordZone.ID, includingComment: Bool = true) -> CKRecord {
         let record = CKRecord(
             recordType: pointRecordType(from: event.from),
             recordID: CKRecord.ID(recordName: event.id, zoneID: zoneID)
         )
         record[Field.delta] = Int64(event.delta)
         record[Field.createdAt] = event.createdAt
+        if includingComment && !event.comment.isEmpty {
+            record[Field.comment] = event.comment
+        }
         return record
+    }
+
+    public static func hasComment(_ record: CKRecord) -> Bool {
+        record[Field.comment] != nil
     }
 
     /// Reads a point record. Anything other than a single +1 or −1 is ignored.
@@ -76,7 +85,8 @@ public enum CloudSchema {
         }
         guard let delta = record[Field.delta] as? Int, delta == 1 || delta == -1 else { return nil }
         let createdAt = record[Field.createdAt] as? Date ?? record.creationDate ?? .now
-        return PointEvent(id: record.recordID.recordName, from: side, delta: delta, createdAt: createdAt)
+        let comment = AppConfig.cleanComment(record[Field.comment] as? String)
+        return PointEvent(id: record.recordID.recordName, from: side, delta: delta, comment: comment, createdAt: createdAt)
     }
 
     // MARK: Profiles
