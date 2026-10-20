@@ -136,7 +136,7 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 
 ## Open
 
-- The `comment` field on `PointFromOwner` and `PointFromParticipant` must be added in Development (Console → Record Types → add field, String) and deployed to Production. Until then TestFlight points arrive without their note.
+- The `comment` field on `PointFromOwner` and `PointFromParticipant` exists in Development (added 2026-10-20) but must still be deployed to Production. Until then TestFlight points arrive without their note.
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.
 - Never exercised on real devices: the owner detecting that the partner left (read from the share's participant list), "delete all data" against iCloud, account switch.
