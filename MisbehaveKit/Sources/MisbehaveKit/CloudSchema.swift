@@ -10,7 +10,11 @@ public enum CloudSchema {
         public static let profile = "Profile"
         public static let pointFromOwner = "PointFromOwner"
         public static let pointFromParticipant = "PointFromParticipant"
+        public static let connectionStyle = "ConnectionStyle"
     }
+
+    /// The one `ConnectionStyle` record per zone; both partners write it.
+    public static let styleRecordName = "style"
 
     public enum Field {
         public static let role = "role"
@@ -18,6 +22,8 @@ public enum CloudSchema {
         public static let delta = "delta"
         public static let createdAt = "createdAt"
         public static let comment = "comment"
+        /// `ConnectionStyle` as JSON, so new options need no schema change.
+        public static let payload = "payload"
     }
 
     public enum SubscriptionID {
@@ -125,6 +131,25 @@ public enum CloudSchema {
             role: (record[Field.role] as? String).flatMap(Role.init(rawValue:)),
             name: AppConfig.cleanName(record[Field.displayName] as? String)
         )
+    }
+
+    // MARK: Style
+
+    public static func styleRecordID(in zoneID: CKRecordZone.ID) -> CKRecord.ID {
+        CKRecord.ID(recordName: styleRecordName, zoneID: zoneID)
+    }
+
+    public static func styleRecord(_ style: ConnectionStyle, in zoneID: CKRecordZone.ID, systemFields: Data? = nil) -> CKRecord {
+        let recordID = styleRecordID(in: zoneID)
+        let record = systemFields.flatMap(decodeSystemFields).flatMap { $0.recordID == recordID ? $0 : nil }
+            ?? CKRecord(recordType: RecordType.connectionStyle, recordID: recordID)
+        record[Field.payload] = style.payload()
+        return record
+    }
+
+    public static func style(from record: CKRecord) -> ConnectionStyle? {
+        guard record.recordType == RecordType.connectionStyle, let payload = record[Field.payload] as? String else { return nil }
+        return ConnectionStyle.decode(payload: payload)
     }
 
     // MARK: Archiving

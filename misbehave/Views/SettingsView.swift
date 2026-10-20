@@ -8,6 +8,7 @@ struct SettingsView: View {
     @State private var role: Role = .goodgirl
     @State private var confirmsDelete = false
     @State private var isDeleting = false
+    @State private var isCustomizing = false
 
     var body: some View {
         NavigationStack {
@@ -30,6 +31,20 @@ struct SettingsView: View {
                     Text("You")
                 } footer: {
                     Text("Your partners see the name. The role applies to connections you add from now on.")
+                }
+
+                Section {
+                    Button {
+                        isCustomizing = true
+                    } label: {
+                        Label {
+                            Text("Customize the app")
+                        } icon: {
+                            Image(systemName: "paintbrush.pointed.fill")
+                        }
+                    }
+                } footer: {
+                    Text("Colours, background, font and more for this iPhone. The app icon follows the colours. Each connection has its own look, set on its page.")
                 }
 
                 Section("Notifications") {
@@ -98,8 +113,8 @@ struct SettingsView: View {
                 if new.count > AppConfig.maxNameLength { name = String(new.prefix(AppConfig.maxNameLength)) }
             }
             .task { await model.refreshNotificationStatus() }
+            .sheet(isPresented: $isCustomizing) { LookEditor(target: .app) }
         }
-        .fontDesign(.rounded)
     }
 
     private func save() {
@@ -185,6 +200,7 @@ struct DiagnosticsView: View {
                 )
                 row("Last fallback notification", date: diagnostics.lastFallbackNotificationAt)
                 row("Last point sent with its note", date: diagnostics.lastCommentSavedAt, error: diagnostics.commentError)
+                row("Last look sent", date: diagnostics.lastStyleSavedAt, error: diagnostics.styleError)
             } header: {
                 Text("What happened")
             } footer: {

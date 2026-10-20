@@ -1,13 +1,14 @@
 # misbehave
 
-iPhone app for couples. Two people link their iPhones and give each other points: +1 when something was nice, −1 when not. Every point needs a short note saying why. The partner gets a push right then ("You received +1 goodgirl point" plus the note) and sees the score in a widget. The moment is the product: a point that arrives late or silently has missed its purpose, so **push and widget freshness matter more than anything else in the app**.
+iPhone app for couples. Two people link their iPhones and give each other points: +1 when something was nice, −1 when not. Every point needs a short note saying why. The partner gets a push right then ("+1 goodgirl point" with the note below it, no emoji of the app's own) and sees the score in a widget. The moment is the product: a point that arrives late or silently has missed its purpose, so **push and widget freshness matter more than anything else in the app**.
 
 - Each person picks a role, `goodgirl` or `goodboy` (shown untranslated). It names the points they collect.
 - A person can have several connections; each has its own score, strictly separate.
 - Each connection shows its history below the buttons: every point with its note, chat-style (partner's on the left under their mascot, own on the right), grouped by day.
 - A person can give the partner a nickname per connection (pet names differ between couples). It is local only (`Connection.partnerNickname`) and wins over the partner's own name everywhere on that iPhone: list, widget, push.
 - Free, no accounts, no own server, no ads, no tracking, no third-party code.
-- It is a cozy little toy, not a utility: **girls are cats 🐱, boys are dogs 🐶, and everyone is pink** (never blue for boys). Mascots are emoji; no image assets.
+- It is a cozy little toy, not a utility. The default look: **girls are cats 🐱, boys are dogs 🐶, and everyone is pink** (never blue for boys). Mascots are emoji; the only image assets are the app icons.
+- Everything is customizable, as playfully as possible: colours, background pattern, font, the emoji that fly when points change, and each person's mascot. Each connection has one shared look that both partners edit (their page, widgets, notification picture); the app has its own local look for everything else, and the app icon follows its colours.
 - Not in scope for v1: rewards, streaks, iPad/Mac, more than two people per connection.
 
 Bundle ID `com.mp17.mpapps.misbehave`, iPhone only, iOS 18+, English only (no translations and no language switch for now). Original plan (German, working title "Goodgirl/Goodboy"): https://claude.ai/code/artifact/c22d5ca8-3c7b-40b4-be29-318d8353497c (a Claude Doc; read it with the docs connector).
@@ -39,16 +40,18 @@ The Xcode project uses file-system-synchronized folders: a file added to a targe
 
 ### Look
 
-- `MisbehaveKit/RoleStyle.swift`: the two pink gradients, the `Cozy` colours (cream background, cards, plum ink) and the paw pattern. Shared by app and widget.
-- `MisbehaveKit/Mood.swift`: a score maps to a mood, which picks a badge on the mascot and a line like "Purring loudly". Decoration only. The mascot itself is always 🐱 or 🐶 (Marco did not want the cat's face to change with the score); only the reaction closing the notification text uses 😻/😿.
-- `misbehave/Views/Theme.swift`: stickers, cards, button styles, the emoji burst and the other little animations. Screens are built from these; don't style a screen from scratch.
+- `MisbehaveKit/Look.swift`: `Look` (`Palette`, `Pattern`, `Typeface`, `Burst`), `ConnectionStyle` (look + mascot per side, synced as JSON) and the `look` environment value. Options decode unknown raw values as their default, so a newer app's option never breaks an older one. Shared by app, widget and notification extension.
+- `MisbehaveKit/RoleStyle.swift`: the default pink `Cozy` colours and the scattered-symbol pattern (`PawPattern`). `Mood.swift`: a score maps to a badge and a line like "Purring loudly"; the mascot's face never changes with the score.
+- `misbehave/Views/Theme.swift`: stickers, cards, buttons, the emoji burst; all read `@Environment(\.look)`. `.themed(look)` sets a look for a subtree (root: app look; connection page: its look). Use `.cozyFont(...)` for text in themed screens, not `.font(...)`: custom families (Marker Felt, Noteworthy, …) are resolved to real faces via UIFont, and a `fontDesign` must never sit on them or SwiftUI swaps in the system face. Don't style a screen from scratch.
+- `misbehave/Views/LookEditor.swift`: the Customize sheet (connection page toolbar, Settings → Customize the app).
+- App icons: one alternate per palette (`AppIcon-<palette>`), rendered by `swift Tools/make-app-icons.swift` from the primary icon and listed in `ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES`. iOS shows its own alert on every icon change.
 - Forms keep system colours. `.ink()` goes on text groups only: on a container it takes the tint from plain buttons and the red from destructive ones.
 
 ### Local state
 
 JSON files in the App Group container (`group.com.mp17.mpapps.misbehave`), each with **exactly one writer** so no cross-process lock is needed:
 
-- `store.json`: written only by the app.
+- `store.json`: written only by the app. Holds the app's own look (`StoreState.look`) and the partner nicknames, which never leave the device.
 - `inbox.json`: written only by the notification extension (what it fetched, plus its last run for diagnostics).
 - `diagnostics.json`: written only by the app.
 
@@ -63,9 +66,11 @@ Container `iCloud.com.mp17.mpapps.misbehave`. **A connection is a record zone** 
 | `Profile` | `owner` or `participant` | `role`, `displayName` |
 | `PointFromOwner` | event id | `delta` (+1/−1), `createdAt`, `comment` (String) |
 | `PointFromParticipant` | event id | `delta` (+1/−1), `createdAt`, `comment` (String) |
+| `ConnectionStyle` | `style` | `payload` (String: `ConnectionStyle` as JSON) |
 
 - Points are immutable events; a score is the sum of the other side's deltas. No counters, so no sync conflicts.
 - `comment` is required in the UI but optional in the data (older points have none). If iCloud rejects a point because of the note (Production schema without the field), the app resends it without the note for the rest of that launch, so the point still arrives; Diagnose shows the error.
+- The style record is written by both partners; on a conflict the newer `updatedAt` inside the JSON wins. New look options need no schema change, only a new JSON key.
 - Which side a device is follows from the database the zone is in: private = owner, shared = participant. No local person id.
 - Connections are always identified by zone id, never by name.
 - Sync runs through two `CKSyncEngine` instances (private and shared). Invitations, accepting, subscriptions and "delete all" talk to CloudKit directly because they need the network right now.
@@ -75,7 +80,7 @@ Container `iCloud.com.mp17.mpapps.misbehave`. **A connection is a record zone** 
 
 1. Two `CKDatabaseSubscription`s filtered by record type: private database on `PointFromParticipant`, shared on `PointFromOwner`. So only the partner's points trigger a push. They are re-saved on every launch.
 2. The push carries a neutral localized text (`push.neutral.body`), `mutable-content` and `content-available`.
-3. The notification extension fetches the new points with its own change tokens, writes them to the inbox, sets the real text (ending in the mascot's reaction, e.g. 😻 or 🐶🦴), attaches a small picture of the mascot with the points (`NotificationSticker`) and reloads the widget.
+3. The notification extension fetches the new points (and the connection's style) with its own change tokens, writes them to the inbox, sets the real text ("+1 goodboy point" and the notes), attaches a picture of the receiver's mascot with the points in the connection's colours and pattern (`NotificationSticker`, the only part of a notification an app can colour) and reloads the widget.
 4. `content-available` also wakes the app, which syncs and reloads the widget.
 5. Fallback: if points arrive through a background sync and no remote notification was delivered, the app posts a local one.
 6. While the app is in the foreground, real pushes show no banner (the score changes on screen); only the demo connection's does.
@@ -105,7 +110,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **9**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **10**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
@@ -136,6 +141,8 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 - The demo connection is local only and mirrors every tap; it exists so the app and its notification can be tried alone (also for App Review).
 
 ## Open
+
+- `ConnectionStyle` (field `payload`, String) exists in Development since 2026-10-20 and must be deployed to Production. Until then looks stay on each device (Diagnose shows the error) and the partner does not see them.
 
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.

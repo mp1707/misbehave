@@ -8,6 +8,7 @@ struct AddConnectionView: View {
     @State private var isCreating = false
     @State private var created: Connection?
     @State private var failed = false
+    @Environment(\.look) private var look
 
     private var role: Role { model.state.profile?.role ?? .goodgirl }
 
@@ -23,7 +24,7 @@ struct AddConnectionView: View {
                     if let url = created?.inviteURL {
                         VStack(spacing: 20) {
                             Text("Your link is ready")
-                                .font(.title2.weight(.heavy))
+                                .cozyFont(.title2, weight: .heavy)
                             Text("Send it to your partner. It works exactly once, so nobody else can join with it.")
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
@@ -35,7 +36,7 @@ struct AddConnectionView: View {
                         .buttonStyle(ProminentButtonStyle(role: role))
                     } else {
                         Text("Invite your partner")
-                            .font(.title2.weight(.heavy))
+                            .cozyFont(.title2, weight: .heavy)
                             .ink()
                         VStack(alignment: .leading, spacing: 14) {
                             step("1.circle.fill", "Create a link and send it to your partner.")
@@ -94,14 +95,13 @@ struct AddConnectionView: View {
             }
             .interactiveDismissDisabled(isCreating)
         }
-        .fontDesign(.rounded)
     }
 
     private func step(_ systemImage: String, _ text: LocalizedStringKey) -> some View {
         Label {
             Text(text)
         } icon: {
-            Image(systemName: systemImage).font(.title3).foregroundStyle(role.gradient)
+            Image(systemName: systemImage).font(.title3).foregroundStyle(look.gradient(for: role))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

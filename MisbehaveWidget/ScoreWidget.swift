@@ -66,8 +66,12 @@ struct ScoreEntry: TimelineEntry {
         var score: Int
         var partnerRole: Role
         var partnerScore: Int
+        var mascot: String
+        var partnerMascot: String
         /// Why the partner gave the newest point that came with a note.
         var note: String?
+        /// The connection's shared look.
+        var look: Look
 
         var mood: Mood { Mood(score: score) }
         var partnerMood: Mood { Mood(score: partnerScore) }
@@ -83,11 +87,16 @@ struct ScoreEntry: TimelineEntry {
 
     var date: Date
     var content: Content
+    /// The app's own look, for the empty states.
+    var appLook = Look()
 }
 
 struct ScoreProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> ScoreEntry {
-        ScoreEntry(date: .now, content: .score(.init(id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8, note: "You made me breakfast")))
+        ScoreEntry(date: .now, content: .score(.init(
+            id: "", partner: "Alex", role: .goodgirl, score: 12, partnerRole: .goodboy, partnerScore: 8,
+            mascot: Role.goodgirl.emoji, partnerMascot: Role.goodboy.emoji, note: "You made me breakfast", look: Look()
+        )))
     }
 
     func snapshot(for configuration: SelectConnectionIntent, in context: Context) async -> ScoreEntry {
@@ -103,24 +112,28 @@ struct ScoreProvider: AppIntentTimelineProvider {
     }
 
     private func entry(for configuration: SelectConnectionIntent) -> ScoreEntry {
-        let active = LocalStore.shared.snapshot().connections.filter { $0.phase == .active }
+        let state = LocalStore.shared.snapshot()
+        let active = state.connections.filter { $0.phase == .active }
         let connection: Connection?
         if let chosen = configuration.connection {
             connection = active.first { $0.id == chosen.id }
-            if connection == nil { return ScoreEntry(date: .now, content: .disconnected) }
+            if connection == nil { return ScoreEntry(date: .now, content: .disconnected, appLook: state.look) }
         } else {
             connection = active.first
         }
-        guard let connection else { return ScoreEntry(date: .now, content: .noConnection) }
+        guard let connection else { return ScoreEntry(date: .now, content: .noConnection, appLook: state.look) }
         return ScoreEntry(date: .now, content: .score(.init(
             id: connection.id,
             partner: connection.partnerDisplayName,
             role: connection.myRole,
             score: connection.myScore,
-            partnerRole: connection.partnerRole ?? connection.myRole.opposite,
+            partnerRole: connection.resolvedPartnerRole,
             partnerScore: connection.partnerScore,
-            note: connection.latestReceivedNote?.comment
-        )))
+            mascot: connection.myMascot,
+            partnerMascot: connection.partnerMascot,
+            note: connection.latestReceivedNote?.comment,
+            look: connection.look
+        )), appLook: state.look)
     }
 }
 
@@ -131,9 +144,14 @@ struct ScoreWidgetView: View {
     @Environment(\.widgetRenderingMode) private var renderingMode
     var entry: ScoreEntry
 
+    private var look: Look {
+        if case .score(let score) = entry.content { return score.look }
+        return entry.appLook
+    }
+
     var body: some View {
         content
-            .fontDesign(.rounded)
+            .fontDesign(look.typeface.design)
             .containerBackground(for: .widget) { background }
             .widgetURL(url)
     }
@@ -145,15 +163,15 @@ struct ScoreWidgetView: View {
 
     @ViewBuilder private var background: some View {
         if case .score(let score) = entry.content {
-            score.role.gradient
-                .overlay { PawPattern(size: 24).foregroundStyle(.white.opacity(0.14)) }
+            look.gradient(for: score.role)
+                .overlay { PawPattern(look.pattern, size: 24).foregroundStyle(.white.opacity(0.14)) }
         } else {
-            Cozy.background
-                .overlay { PawPattern(size: 24).foregroundStyle(Cozy.blush) }
+            look.palette.background
+                .overlay { PawPattern(look.pattern, size: 24).foregroundStyle(look.palette.blush) }
         }
     }
 
-    /// White on the role's gradient; in the tinted and clear styles the system colours the text.
+    /// White on the gradient; in the tinted and clear styles the system colours the text.
     private var foreground: Color {
         renderingMode == .fullColor ? .white : .primary
     }
@@ -164,7 +182,7 @@ struct ScoreWidgetView: View {
             switch family {
             case .accessoryInline:
                 Label {
-                    Text(verbatim: "\(score.role.label) · \(score.score)")
+                    Text(verbatim: PushText.points(score.score, role: score.role))
                 } icon: {
                     Image(systemName: score.role.symbolName)
                 }
@@ -173,12 +191,12 @@ struct ScoreWidgetView: View {
                     Image(systemName: score.role.symbolName)
                         .font(.system(size: 13))
                     Text(score.score, format: .number)
-                        .font(.system(.title2, design: .rounded).weight(.heavy))
+                        .font(look.font(.title2, weight: .heavy))
                         .minimumScaleFactor(0.5)
                         .widgetAccentable()
                 }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(score.role.label) · \(score.score)"))
+                .accessibilityLabel(Text(verbatim: PushText.points(score.score, role: score.role)))
             case .accessoryRectangular:
                 HStack(spacing: 8) {
                     Image(systemName: score.role.symbolName)
@@ -186,13 +204,13 @@ struct ScoreWidgetView: View {
                         .widgetAccentable()
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: score.partner)
-                            .font(.headline)
+                            .font(look.font(.headline, weight: .semibold))
                             .widgetAccentable()
-                        Text(verbatim: "\(score.role.label) · \(score.score)")
-                            .font(.system(.body, design: .rounded).weight(.semibold))
+                        Text(verbatim: PushText.points(score.score, role: score.role))
+                            .font(look.font(.body, weight: .semibold))
                         if let note = score.note {
                             Text(verbatim: PushText.quoted(note))
-                                .font(.caption)
+                                .font(look.font(.caption))
                                 .lineLimit(1)
                         }
                     }
@@ -201,14 +219,14 @@ struct ScoreWidgetView: View {
             case .systemMedium:
                 VStack(spacing: 6) {
                     HStack(spacing: 4) {
-                        half(face: score.role.emoji, badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"), compact: score.note != nil)
+                        half(face: score.mascot, badge: score.mood.badge, score: score.score, role: score.role, name: Text("You"), compact: score.note != nil)
                         Text(verbatim: "💞")
                             .font(.system(size: 22))
-                        half(face: score.partnerRole.emoji, badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner), compact: score.note != nil)
+                        half(face: score.partnerMascot, badge: score.partnerMood.badge, score: score.partnerScore, role: score.partnerRole, name: Text(verbatim: score.partner), compact: score.note != nil)
                     }
                     if let note = score.note {
                         HStack(spacing: 5) {
-                            Text(verbatim: score.partnerRole.emoji)
+                            Text(verbatim: score.partnerMascot)
                                 .font(.caption)
                             noteLine(note, lineLimit: 1)
                         }
@@ -222,43 +240,33 @@ struct ScoreWidgetView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 4) {
                         Text(verbatim: score.partner)
-                            .font(.subheadline.weight(.bold))
+                            .font(look.font(.subheadline, weight: .bold))
                             .lineLimit(score.note == nil ? 2 : 1)
                             .minimumScaleFactor(0.8)
                             .opacity(0.95)
                         Spacer(minLength: 0)
-                        sticker(score.role.emoji, badge: score.mood.badge, size: 46)
+                        sticker(score.mascot, badge: score.mood.badge, size: 46)
                     }
                     Spacer(minLength: 0)
+                    Text(score.score, format: .number)
+                        .font(look.font(size: score.note == nil ? 50 : 38, weight: .heavy))
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                        .contentTransition(.numericText(value: Double(score.score)))
+                        .widgetAccentable()
+                    Text(verbatim: PushText.pointsLabel(count: score.score, role: score.role))
+                        .font(look.font(score.note == nil ? .subheadline : .caption, weight: .heavy))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                     if let note = score.note {
-                        HStack(alignment: .firstTextBaseline, spacing: 5) {
-                            Text(score.score, format: .number)
-                                .font(.system(size: 38, weight: .heavy, design: .rounded))
-                                .minimumScaleFactor(0.4)
-                                .lineLimit(1)
-                                .contentTransition(.numericText(value: Double(score.score)))
-                                .widgetAccentable()
-                            Text(verbatim: score.role.label)
-                                .font(.system(.caption, design: .rounded).weight(.heavy))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                        }
                         noteLine(note, lineLimit: 2)
-                    } else {
-                        Text(score.score, format: .number)
-                            .font(.system(size: 50, weight: .heavy, design: .rounded))
-                            .minimumScaleFactor(0.4)
-                            .lineLimit(1)
-                            .contentTransition(.numericText(value: Double(score.score)))
-                            .widgetAccentable()
-                        Text(verbatim: score.role.label)
-                            .font(.system(.subheadline, design: .rounded).weight(.heavy))
+                            .padding(.top, 3)
                     }
                 }
                 .foregroundStyle(foreground)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(score.partner), \(score.role.label) · \(score.score)" + (score.note.map { ", " + $0 } ?? "")))
+                .accessibilityLabel(Text(verbatim: "\(score.partner), \(PushText.points(score.score, role: score.role))" + (score.note.map { ", " + $0 } ?? "")))
             }
         case .noConnection:
             emptyState("🐾", "pawprint.fill", "No connection", "Open misbehave to connect.")
@@ -270,7 +278,7 @@ struct ScoreWidgetView: View {
     /// The partner's newest note, in quotes, under the score.
     private func noteLine(_ note: String, lineLimit: Int) -> some View {
         Text(verbatim: PushText.quoted(note))
-            .font(.system(.caption, design: .rounded).weight(.semibold))
+            .font(look.font(.caption, weight: .semibold))
             .lineLimit(lineLimit)
             .opacity(0.95)
     }
@@ -282,17 +290,19 @@ struct ScoreWidgetView: View {
             HStack(spacing: 8) {
                 sticker(face, badge: badge, size: compact ? 42 : 50)
                 Text(score, format: .number)
-                    .font(.system(size: 42, weight: .heavy, design: .rounded))
+                    .font(look.font(size: 42, weight: .heavy))
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
                     .contentTransition(.numericText(value: Double(score)))
                     .widgetAccentable()
             }
-            Text(verbatim: role.label)
-                .font(.system(.subheadline, design: .rounded).weight(.heavy))
+            Text(verbatim: PushText.pointsLabel(count: score, role: role))
+                .font(look.font(.subheadline, weight: .heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 .padding(.top, compact ? 2 : 8)
             name
-                .font(.caption.weight(.semibold))
+                .font(look.font(.caption, weight: .semibold))
                 .lineLimit(1)
                 .opacity(0.9)
         }
@@ -332,16 +342,16 @@ struct ScoreWidgetView: View {
                 Text(verbatim: emoji)
                     .font(.system(size: 28))
                     .frame(width: 46, height: 46)
-                    .background(Cozy.blush, in: .circle)
+                    .background(look.palette.blush, in: .circle)
                     .accessibilityHidden(true)
                 Spacer(minLength: 0)
                 Text(title)
-                    .font(.headline.weight(.heavy))
+                    .font(look.font(.headline, weight: .heavy))
                 Text(hint)
-                    .font(.caption)
+                    .font(look.font(.caption))
                     .foregroundStyle(.secondary)
             }
-            .foregroundStyle(Cozy.ink)
+            .foregroundStyle(look.palette.ink)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
     }

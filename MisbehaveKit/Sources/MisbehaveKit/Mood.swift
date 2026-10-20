@@ -32,19 +32,4 @@ extension Role {
     public func moodLine(_ mood: Mood) -> String {
         PushText.string("mood.\(rawValue).\(mood.rawValue)")
     }
-
-    /// Sits next to the mascot in the notification picture: a treat for a point, a broken heart for a lost one.
-    public func accent(afterDelta delta: Int) -> String? {
-        guard delta != 0 else { return nil }
-        if delta < 0 { return "💔" }
-        return self == .goodgirl ? "🐟" : "🦴"
-    }
-
-    /// Closes the notification text, e.g. "😻" or "🐶🦴". The only place the cat changes its face.
-    public func reaction(toDelta delta: Int) -> String {
-        switch self {
-        case .goodgirl: delta > 0 ? "😻" : delta < 0 ? "😿" : emoji
-        case .goodboy: emoji + (accent(afterDelta: delta) ?? "")
-        }
-    }
 }

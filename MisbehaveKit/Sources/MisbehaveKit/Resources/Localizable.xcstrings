@@ -122,6 +122,28 @@
         }
       }
     },
+    "points.label.one" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ point"
+          }
+        }
+      }
+    },
+    "points.label.other" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ points"
+          }
+        }
+      }
+    },
     "push.changed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -140,50 +162,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@: %2$@ points changed"
-          }
-        }
-      }
-    },
-    "push.line.one" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@ %3$@ point"
-          }
-        }
-      }
-    },
-    "push.line.other" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@ %3$@ points"
-          }
-        }
-      }
-    },
-    "push.received.one" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You received %1$@ %2$@ point"
-          }
-        }
-      }
-    },
-    "push.received.other" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You received %1$@ %2$@ points"
           }
         }
       }

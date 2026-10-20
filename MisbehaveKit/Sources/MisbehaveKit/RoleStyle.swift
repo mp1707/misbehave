@@ -12,7 +12,27 @@ struct RGB: Sendable {
         self.blue = blue
     }
 
+    init(hue: Double, saturation: Double, brightness: Double) {
+        let h = (hue - floor(hue)) * 6
+        let c = brightness * saturation
+        let x = c * (1 - abs(h.truncatingRemainder(dividingBy: 2) - 1))
+        let m = brightness - c
+        let (r, g, b): (Double, Double, Double) = switch Int(h) {
+        case 0: (c, x, 0)
+        case 1: (x, c, 0)
+        case 2: (0, c, x)
+        case 3: (0, x, c)
+        case 4: (x, 0, c)
+        default: (c, 0, x)
+        }
+        self.init(r + m, g + m, b + m)
+    }
+
     var color: Color { Color(red: red, green: green, blue: blue) }
+
+    #if canImport(UIKit)
+    var uiColor: UIColor { UIColor(red: red, green: green, blue: blue, alpha: 1) }
+    #endif
 }
 
 extension Role {
@@ -22,26 +42,10 @@ extension Role {
     /// For places that cannot show colour, like the lock screen.
     public var symbolName: String { self == .goodgirl ? "cat.fill" : "dog.fill" }
 
-    /// Everyone is pink: rose for the cat, a warmer strawberry for the dog.
-    var gradientStart: RGB {
-        switch self {
-        case .goodgirl: RGB(0.93, 0.29, 0.56)
-        case .goodboy: RGB(0.91, 0.30, 0.43)
-        }
-    }
+    /// In the default look everyone is pink: rose for the cat, a warmer strawberry for the dog.
+    public var tint: Color { Palette.standard.tint(for: self) }
 
-    var gradientEnd: RGB {
-        switch self {
-        case .goodgirl: RGB(0.99, 0.53, 0.69)
-        case .goodboy: RGB(0.99, 0.57, 0.53)
-        }
-    }
-
-    public var tint: Color { gradientStart.color }
-
-    public var gradient: LinearGradient {
-        LinearGradient(colors: [gradientStart.color, gradientEnd.color], startPoint: .topLeading, endPoint: .bottomTrailing)
-    }
+    public var gradient: LinearGradient { Palette.standard.gradient(for: self) }
 }
 
 /// The app's warm colours, shared with the widget.
@@ -66,7 +70,7 @@ public enum Cozy {
     }
 }
 
-/// A few paw prints scattered over a card or a screen.
+/// A few symbols (paw prints by default) scattered over a card or a screen.
 public struct PawPattern: View {
     private struct Paw {
         var x: Double
@@ -87,16 +91,22 @@ public struct PawPattern: View {
     ]
 
     private var size: Double
+    private var symbol: String?
 
-    public init(size: Double = 30) {
+    public init(size: Double = 30, symbol: String? = "pawprint.fill") {
         self.size = size
+        self.symbol = symbol
+    }
+
+    public init(_ pattern: Pattern, size: Double = 30) {
+        self.init(size: size, symbol: pattern.symbol)
     }
 
     public var body: some View {
         GeometryReader { proxy in
-            ForEach(Self.paws.indices, id: \.self) { index in
+            ForEach(symbol == nil ? [] : Array(Self.paws.indices), id: \.self) { index in
                 let paw = Self.paws[index]
-                Image(systemName: "pawprint.fill")
+                Image(systemName: symbol ?? "")
                     .font(.system(size: size * paw.scale))
                     .rotationEffect(.degrees(paw.angle))
                     .position(x: proxy.size.width * paw.x, y: proxy.size.height * paw.y)

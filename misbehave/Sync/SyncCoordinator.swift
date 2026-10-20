@@ -46,6 +46,10 @@ final class SyncCoordinator: CKSyncEngineDelegate {
         queueSave(recordName: connection.side.rawValue, in: connection)
     }
 
+    func queueStyle(of connection: Connection) {
+        queueSave(recordName: CloudSchema.styleRecordName, in: connection)
+    }
+
     private func queueSave(recordName: String, in connection: Connection) {
         guard !connection.isDemo, let engine = engines[connection.side] else { return }
         let recordID = CKRecord.ID(recordName: recordName, zoneID: CloudSchema.zoneID(for: connection))
@@ -57,6 +61,7 @@ final class SyncCoordinator: CKSyncEngineDelegate {
     func requeueUnsent(in state: StoreState) {
         for connection in state.connections where !connection.isDemo {
             if connection.myProfileUnsent { queueProfile(of: connection) }
+            if connection.styleUnsent { queueStyle(of: connection) }
             for event in connection.events where event.unsent && event.from == connection.side {
                 queuePoint(event, in: connection)
             }
@@ -197,6 +202,12 @@ final class SyncCoordinator: CKSyncEngineDelegate {
         for record in sent.savedRecords {
             if record.recordType == CloudSchema.RecordType.profile {
                 if let again = model.profileSettled(record) { queueProfile(of: again) }
+            } else if record.recordType == CloudSchema.RecordType.connectionStyle {
+                model.noteDiagnostics {
+                    $0.lastStyleSavedAt = .now
+                    $0.styleError = nil
+                }
+                if let again = model.styleSettled(record) { queueStyle(of: again) }
             } else {
                 model.pointUploaded(record.recordID)
                 if CloudSchema.hasComment(record) { model.commentSaved() }
@@ -207,6 +218,10 @@ final class SyncCoordinator: CKSyncEngineDelegate {
         for failure in sent.failedRecordSaves {
             let record = failure.record
             let isProfile = record.recordType == CloudSchema.RecordType.profile
+            if record.recordType == CloudSchema.RecordType.connectionStyle {
+                handleFailedStyle(failure, side: side)
+                continue
+            }
             switch failure.error.code {
             case .serverRecordChanged:
                 if isProfile {
@@ -237,6 +252,25 @@ final class SyncCoordinator: CKSyncEngineDelegate {
                 // Network and availability errors are retried by the engine itself.
                 break
             }
+        }
+    }
+
+    /// Two partners editing at once: the newer look wins. Anything else waits for the next launch.
+    private func handleFailedStyle(_ failure: CKSyncEngine.Event.SentRecordZoneChanges.FailedRecordSave, side: Side) {
+        switch failure.error.code {
+        case .serverRecordChanged:
+            if let server = failure.error.serverRecord, let again = model.styleSettled(server) {
+                queueStyle(of: again)
+            }
+        case .unknownItem:
+            if let again = model.styleNeedsFreshRecord(failure.record.recordID) { queueStyle(of: again) }
+        case .zoneNotFound, .userDeletedZone:
+            model.zoneDisappeared(failure.record.recordID.zoneID, side: side)
+        case .quotaExceeded:
+            model.quotaExceeded = true
+        default:
+            // Most likely the Production schema has no ConnectionStyle yet; stays unsent until the next launch.
+            model.noteDiagnostics { $0.styleError = InboxRefresher.describe(failure.error) }
         }
     }
 

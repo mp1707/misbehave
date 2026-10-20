@@ -330,7 +330,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = PP2LXGF5L3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -373,7 +373,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = PP2LXGF5L3;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -403,6 +403,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-peach AppIcon-cherry AppIcon-sunset AppIcon-lemon AppIcon-matcha AppIcon-ocean AppIcon-lavender AppIcon-unicorn AppIcon-midnight AppIcon-cocoa";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
 				INFOPLIST_FILE = "Config/misbehave-Info.plist";
@@ -425,6 +426,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-peach AppIcon-cherry AppIcon-sunset AppIcon-lemon AppIcon-matcha AppIcon-ocean AppIcon-lavender AppIcon-unicorn AppIcon-midnight AppIcon-cocoa";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Config/misbehave.entitlements;
 				INFOPLIST_FILE = "Config/misbehave-Info.plist";

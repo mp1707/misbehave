@@ -196,20 +196,26 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
     }
 
     @Test func aSinglePointNamesTheRole() {
-        #expect(PushText.phrase(delta: 1, role: .goodgirl) == "You received +1 goodgirl point 😻")
-        #expect(PushText.phrase(delta: 3, role: .goodboy) == "You received +3 goodboy points 🐶🦴")
-        #expect(PushText.phrase(delta: -1, role: .goodboy) == "You received \u{2212}1 goodboy point 🐶💔")
+        #expect(PushText.phrase(delta: 1, role: .goodgirl) == "+1 goodgirl point")
+        #expect(PushText.phrase(delta: 3, role: .goodboy) == "+3 goodboy points")
+        #expect(PushText.phrase(delta: -1, role: .goodboy) == "\u{2212}1 goodboy point")
+    }
+
+    @Test func scoresSayPoints() {
+        #expect(PushText.points(12, role: .goodgirl) == "12 goodgirl points")
+        #expect(PushText.points(1, role: .goodboy) == "1 goodboy point")
+        #expect(PushText.points(-1, role: .goodboy) == "-1 goodboy point")
     }
 
     @Test func oneConnectionUsesThePartnerAsTitle() {
         let content = PushText.content(for: [PointSummary(connectionID: "a", partnerName: "Anna", role: .goodboy, delta: 2)])
         #expect(content?.title == "Anna")
-        #expect(content?.body == "You received +2 goodboy points 🐶🦴")
+        #expect(content?.body == "+2 goodboy points")
     }
 
     @Test func theNotesFollowThePoints() {
         let content = PushText.content(for: [PointSummary(connectionID: "a", partnerName: "Anna", role: .goodgirl, delta: 2, comments: ["coffee", "flowers"])])
-        #expect(content?.body == "You received +2 goodgirl points 😻\n\u{201C}coffee\u{201D}\n\u{201C}flowers\u{201D}")
+        #expect(content?.body == "+2 goodgirl points\n\u{201C}coffee\u{201D}\n\u{201C}flowers\u{201D}")
     }
 
     @Test func aNicknameWinsOverThePartnersOwnName() {
@@ -227,7 +233,7 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
             PointSummary(connectionID: "b", partnerName: nil, role: .goodboy, delta: -2),
         ])
         #expect(content?.title == nil)
-        #expect(content?.body == "Anna: +1 goodboy point 🐶🦴\nYour partner: \u{2212}2 goodboy points 🐶💔")
+        #expect(content?.body == "Anna: +1 goodboy point\nYour partner: \u{2212}2 goodboy points")
     }
 
     @Test func aScoreHasAMood() {
@@ -258,5 +264,58 @@ private func makeConnection(id: String = "conn-1", side: Side = .owner, events: 
         #expect(state.unseenSummaries().map(\.delta) == [2])
         #expect(state.unseenSummaries(alsoCounting: ["conn-2": ["skewed"]]).map(\.delta) == [2, -1])
         #expect(state.unseenSummaries(side: .participant, alsoCounting: ["conn-2": ["skewed"]]).map(\.connectionID) == ["conn-2"])
+    }
+}
+
+@Suite struct LookTests {
+    private let zoneID = CKRecordZone.ID(zoneName: "conn-1", ownerName: CKCurrentUserDefaultName)
+
+    @Test func aStyleSurvivesTheRecordRoundTrip() {
+        let style = ConnectionStyle(
+            look: Look(palette: .matcha, pattern: .stars, typeface: .chalk, burst: .party),
+            ownerMascot: "🦊",
+            updatedAt: Date(timeIntervalSince1970: 1_000_000)
+        )
+        let record = CloudSchema.styleRecord(style, in: zoneID)
+        #expect(record.recordType == "ConnectionStyle")
+        #expect(record.recordID.recordName == "style")
+        #expect(CloudSchema.style(from: record) == style)
+    }
+
+    @Test func unknownOptionsFallBackToTheDefault() throws {
+        let json = #"{"look":{"palette":"glitterbomb","pattern":"stars"},"participantMascot":"🐸","updatedAt":"2026-10-20T10:00:00Z"}"#
+        let style = try #require(ConnectionStyle.decode(payload: json))
+        #expect(style.look.palette == .bubblegum)
+        #expect(style.look.pattern == .stars)
+        #expect(style.look.typeface == .rounded)
+        #expect(style.participantMascot == "🐸")
+    }
+
+    @Test func mascotsComeFromTheStyleElseTheRole() {
+        var connection = makeConnection(side: .participant)
+        #expect(connection.myMascot == "🐶")
+        #expect(connection.partnerMascot == "🐱")
+        connection.style = ConnectionStyle(ownerMascot: "🦄", participantMascot: "🐻")
+        #expect(connection.myMascot == "🐻")
+        #expect(connection.partnerMascot == "🦄")
+    }
+
+    @Test func theNewerStyleFromTheInboxWins() {
+        var state = StoreState()
+        state.connections = [makeConnection()]
+        state.connections[0].style = ConnectionStyle(look: Look(palette: .ocean), updatedAt: Date(timeIntervalSince1970: 10))
+        var zone = ZoneInbox()
+        zone.style = ConnectionStyle(look: Look(palette: .cocoa), updatedAt: Date(timeIntervalSince1970: 20))
+        var inbox = Inbox()
+        inbox.zones["conn-1"] = zone
+        state.absorb(inbox)
+        #expect(state.connections[0].look.palette == .cocoa)
+    }
+
+    @Test func onlyEmojiCountAsMascots() {
+        #expect(Mascots.emoji(in: "🦊 fox") == "🦊")
+        #expect(Mascots.emoji(in: "👩‍❤️‍👨") == "👩‍❤️‍👨")
+        #expect(Mascots.emoji(in: "A") == nil)
+        #expect(Mascots.emoji(in: "") == nil)
     }
 }

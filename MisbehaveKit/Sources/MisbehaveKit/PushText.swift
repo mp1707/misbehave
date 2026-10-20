@@ -9,13 +9,26 @@ public struct PointSummary: Sendable, Equatable {
     public var delta: Int
     /// The notes of these points, oldest first.
     public var comments: [String]
+    /// What the receiving person looks like here, for the notification picture.
+    public var mascot: String
+    public var look: Look
 
-    public init(connectionID: String, partnerName: String?, role: Role, delta: Int, comments: [String] = []) {
+    public init(
+        connectionID: String,
+        partnerName: String?,
+        role: Role,
+        delta: Int,
+        comments: [String] = [],
+        mascot: String? = nil,
+        look: Look = Look()
+    ) {
         self.connectionID = connectionID
         self.partnerName = partnerName
         self.role = role
         self.delta = delta
         self.comments = comments
+        self.mascot = mascot ?? role.emoji
+        self.look = look
     }
 }
 
@@ -36,7 +49,9 @@ extension StoreState {
                 partnerName: connection.partnerShownName,
                 role: connection.myRole,
                 delta: unseen.reduce(0) { $0 + $1.delta },
-                comments: unseen.sorted { $0.createdAt < $1.createdAt }.map(\.comment).filter { !$0.isEmpty }
+                comments: unseen.sorted { $0.createdAt < $1.createdAt }.map(\.comment).filter { !$0.isEmpty },
+                mascot: connection.myMascot,
+                look: connection.look
             )
         }
     }
@@ -55,7 +70,7 @@ extension Connection {
     }
 }
 
-/// The wording of the notification, e.g. "You received +1 goodgirl point 😻".
+/// The wording of the notification, e.g. "+1 goodgirl point" with the note below it.
 public enum PushText {
     /// Looked up in the app's string catalog by the receiving device when CloudKit sends the push.
     public static let neutralBodyKey = "push.neutral.body"
@@ -66,16 +81,29 @@ public enum PushText {
         value < 0 ? "\u{2212}\(-value)" : "+\(value)"
     }
 
+    /// "+1 goodgirl point". No emoji of its own: the notes carry whatever the partner wrote.
     public static func phrase(delta: Int, role: Role) -> String {
-        if delta == 0 { return format("push.changed", role.label) + " " + role.emoji }
-        let key = abs(delta) == 1 ? "push.received.one" : "push.received.other"
-        return format(key, signed(delta), role.label) + " " + role.reaction(toDelta: delta)
+        if delta == 0 { return format("push.changed", role.label) }
+        return points(signed(delta), count: delta, role: role)
     }
 
     public static func line(name: String, delta: Int, role: Role) -> String {
-        if delta == 0 { return format("push.line.changed", name, role.label) + " " + role.emoji }
-        let key = abs(delta) == 1 ? "push.line.one" : "push.line.other"
-        return format(key, name, signed(delta), role.label) + " " + role.reaction(toDelta: delta)
+        if delta == 0 { return format("push.line.changed", name, role.label) }
+        return name + ": " + points(signed(delta), count: delta, role: role)
+    }
+
+    /// "12 goodgirl points" or "1 goodgirl point".
+    public static func points(_ score: Int, role: Role) -> String {
+        points(String(score), count: score, role: role)
+    }
+
+    /// "goodgirl points" or "goodgirl point", for under a big number.
+    public static func pointsLabel(count: Int, role: Role) -> String {
+        format(abs(count) == 1 ? "points.label.one" : "points.label.other", role.label)
+    }
+
+    private static func points(_ number: String, count: Int, role: Role) -> String {
+        number + " " + pointsLabel(count: count, role: role)
     }
 
     /// A note as it appears under the points: “made me coffee”.

@@ -6,6 +6,8 @@ struct HomeView: View {
     @State private var showsAdd = false
     @State private var showsSettings = false
 
+    @Environment(\.look) private var look
+
     private var role: Role { model.state.profile?.role ?? .goodgirl }
 
     var body: some View {
@@ -33,11 +35,11 @@ struct HomeView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Settings", systemImage: "gearshape.fill") { showsSettings = true }
-                        .tint(role.tint)
+                        .tint(look.tint(for: role))
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add connection", systemImage: "plus") { showsAdd = true }
-                        .tint(role.tint)
+                        .tint(look.tint(for: role))
                 }
             }
             .sheet(isPresented: $showsAdd) { AddConnectionView() }
@@ -110,8 +112,9 @@ struct HomeView: View {
             .accessibilityHidden(true)
             VStack(spacing: 16) {
                 Text("No connection yet")
-                    .font(.title2.weight(.heavy))
+                    .cozyFont(.title2, weight: .heavy)
                 Text("Invite your partner with a link, or look around with a demo partner first.")
+                    .cozyFont(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -120,7 +123,7 @@ struct HomeView: View {
                 .buttonStyle(ProminentButtonStyle(role: role))
                 .padding(.top, 8)
             Button("Try the demo") { model.addDemoConnection() }
-                .font(.headline)
+                .cozyFont(.headline, weight: .semibold)
                 .padding(.top, 4)
         }
         .padding(.horizontal, 16)
@@ -136,7 +139,7 @@ struct ConnectionCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
                 if connection.phase == .active {
-                    MascotSticker(face: connection.myRole.emoji, size: 72, badge: mood.badge, onGradient: true)
+                    MascotSticker(face: connection.myMascot, size: 72, badge: mood.badge, onGradient: true)
                         .hop(on: connection.myScore)
                 } else {
                     MascotSticker(face: "💌", size: 72, onGradient: true)
@@ -145,11 +148,11 @@ struct ConnectionCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 8) {
                         Text(verbatim: connection.phase == .active ? connection.partnerDisplayName : String(localized: "Invitation sent"))
-                            .font(.headline)
+                            .cozyFont(.headline, weight: .semibold)
                             .lineLimit(1)
                         if connection.isDemo {
                             Text("Demo")
-                                .font(.caption.bold())
+                                .cozyFont(.caption, weight: .bold)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(.white.opacity(0.28), in: .capsule)
@@ -158,22 +161,16 @@ struct ConnectionCard: View {
                     if connection.phase == .active {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text(connection.myScore, format: .number)
-                                .font(.system(size: 52, weight: .heavy, design: .rounded))
+                                .cozyFont(size: 52, weight: .heavy)
                                 .contentTransition(.numericText(value: Double(connection.myScore)))
-                            Group {
-                                if abs(connection.myScore) == 1 {
-                                    Text("\(connection.myRole.label) point")
-                                } else {
-                                    Text("\(connection.myRole.label) points")
-                                }
-                            }
-                            .font(.system(.headline, design: .rounded, weight: .bold))
+                            Text(verbatim: PushText.pointsLabel(count: connection.myScore, role: connection.myRole))
+                                .cozyFont(.headline, weight: .bold)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
                         }
                     } else {
                         Text("Waiting for your partner to open the link.")
-                            .font(.subheadline)
+                            .cozyFont(.subheadline)
                             .opacity(0.95)
                     }
                 }
@@ -184,9 +181,9 @@ struct ConnectionCard: View {
             }
             if connection.phase == .active, let partnerRole = connection.partnerRole {
                 HStack(spacing: 8) {
-                    Text(verbatim: partnerRole.emoji)
+                    Text(verbatim: connection.partnerMascot)
                     Text("\(connection.partnerDisplayName)'s \(partnerRole.label) points: \(connection.partnerScore)")
-                        .font(.subheadline.weight(.semibold))
+                        .cozyFont(.subheadline, weight: .semibold)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                     Spacer(minLength: 0)
@@ -217,9 +214,9 @@ struct NoticeCard<Actions: View>: View {
             VStack(alignment: .leading, spacing: 8) {
                 Group {
                     Text(title)
-                        .font(.headline)
+                        .cozyFont(.headline, weight: .semibold)
                     Text(message)
-                        .font(.subheadline)
+                        .cozyFont(.subheadline)
                         .foregroundStyle(.secondary)
                 }
                 .ink()

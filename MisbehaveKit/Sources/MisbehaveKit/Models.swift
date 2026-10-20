@@ -82,6 +82,12 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
     public var myProfileSystemFields: Data?
     /// The local profile differs from what CloudKit has.
     public var myProfileUnsent: Bool
+    /// The look both partners share; nil until one of them customizes it.
+    public var style: ConnectionStyle?
+    /// Encoded system fields of the zone's `ConnectionStyle` record.
+    public var styleSystemFields: Data?
+    /// The local style differs from what CloudKit has.
+    public var styleUnsent: Bool = false
 
     public init(
         id: String,
@@ -98,7 +104,8 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
         createdAt: Date = .now,
         events: [PointEvent] = [],
         myProfileSystemFields: Data? = nil,
-        myProfileUnsent: Bool = false
+        myProfileUnsent: Bool = false,
+        style: ConnectionStyle? = nil
     ) {
         self.id = id
         self.zoneOwner = zoneOwner
@@ -115,7 +122,39 @@ public struct Connection: Codable, Sendable, Hashable, Identifiable {
         self.events = events
         self.myProfileSystemFields = myProfileSystemFields
         self.myProfileUnsent = myProfileUnsent
+        self.style = style
     }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        zoneOwner = try container.decode(String.self, forKey: .zoneOwner)
+        side = try container.decode(Side.self, forKey: .side)
+        phase = try container.decode(Phase.self, forKey: .phase)
+        isDemo = try container.decode(Bool.self, forKey: .isDemo)
+        myRole = try container.decode(Role.self, forKey: .myRole)
+        myName = try container.decode(String.self, forKey: .myName)
+        partnerRole = try container.decodeIfPresent(Role.self, forKey: .partnerRole)
+        partnerName = try container.decodeIfPresent(String.self, forKey: .partnerName)
+        partnerNickname = try container.decodeIfPresent(String.self, forKey: .partnerNickname)
+        inviteURL = try container.decodeIfPresent(URL.self, forKey: .inviteURL)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        events = try container.decode([PointEvent].self, forKey: .events)
+        myProfileSystemFields = try container.decodeIfPresent(Data.self, forKey: .myProfileSystemFields)
+        myProfileUnsent = try container.decode(Bool.self, forKey: .myProfileUnsent)
+        style = try container.decodeIfPresent(ConnectionStyle.self, forKey: .style)
+        styleSystemFields = try container.decodeIfPresent(Data.self, forKey: .styleSystemFields)
+        styleUnsent = try container.decodeIfPresent(Bool.self, forKey: .styleUnsent) ?? false
+    }
+
+    public var look: Look { style?.look ?? Look() }
+
+    public var resolvedPartnerRole: Role { partnerRole ?? myRole.opposite }
+
+    /// The emoji this person wears here: chosen in the connection's style, else the role's cat or dog.
+    public var myMascot: String { style?.mascot(of: side) ?? myRole.emoji }
+
+    public var partnerMascot: String { style?.mascot(of: side.other) ?? resolvedPartnerRole.emoji }
 
     /// Points this device's person received: everything the other side wrote.
     public var myScore: Int { score(givenBy: side.other) }
@@ -197,6 +236,8 @@ public struct StoreState: Codable, Sendable, Hashable {
     public var lastActiveAt: Date?
     public var notices: [EndedNotice] = []
     public var prefs = Prefs()
+    /// The app's own look, for everything outside a connection. Stays on this iPhone.
+    public var look = Look()
 
     public init() {}
 
@@ -207,6 +248,7 @@ public struct StoreState: Codable, Sendable, Hashable {
         lastActiveAt = try container.decodeIfPresent(Date.self, forKey: .lastActiveAt)
         notices = try container.decodeIfPresent([EndedNotice].self, forKey: .notices) ?? []
         prefs = try container.decodeIfPresent(Prefs.self, forKey: .prefs) ?? Prefs()
+        look = (try? container.decodeIfPresent(Look.self, forKey: .look)) ?? Look()
     }
 
     public func connection(_ id: String) -> Connection? {
@@ -222,6 +264,7 @@ public struct ZoneInbox: Codable, Sendable, Hashable {
     public var events: [PointEvent] = []
     public var partnerName: String?
     public var partnerRole: Role?
+    public var style: ConnectionStyle?
 
     public init() {}
 
@@ -266,6 +309,10 @@ public struct AppDiagnostics: Codable, Sendable, Hashable {
     public var lastCommentSavedAt: Date?
     /// Set when iCloud refused the note, e.g. because the schema in Production lacks the field.
     public var commentError: String?
+    /// Last time a connection's look reached iCloud.
+    public var lastStyleSavedAt: Date?
+    /// Set when iCloud refused a look, e.g. because the Production schema lacks `ConnectionStyle`.
+    public var styleError: String?
 
     public init() {}
 }
@@ -306,6 +353,11 @@ extension StoreState {
             }
             if connections[index].partnerRole == nil, let role = zone.partnerRole {
                 connections[index].partnerRole = role
+                changed = true
+            }
+            if let style = zone.style, !connections[index].styleUnsent,
+               style.updatedAt > connections[index].style?.updatedAt ?? .distantPast {
+                connections[index].style = style
                 changed = true
             }
         }

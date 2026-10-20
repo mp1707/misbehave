@@ -29,14 +29,14 @@ struct HistoryView: View {
     var body: some View {
         VStack(spacing: 12) {
             Text("History")
-                .font(.system(.title3, design: .rounded, weight: .heavy))
+                .cozyFont(.title3, weight: .heavy)
                 .ink()
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 8)
 
             if connection.events.isEmpty {
                 Text("Every point lands here, together with why it was given.")
-                    .font(.subheadline)
+                    .cozyFont(.subheadline)
                     .foregroundStyle(.secondary)
                     .ink()
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -58,6 +58,7 @@ struct HistoryView: View {
 
 private struct DayLabel: View {
     var date: Date
+    @Environment(\.look) private var look
 
     var body: some View {
         Group {
@@ -71,10 +72,10 @@ private struct DayLabel: View {
                 Text(date, format: .dateTime.day().month(.wide).year())
             }
         }
-        .font(.caption.weight(.bold))
+        .cozyFont(.caption, weight: .bold)
         .padding(.horizontal, 12)
         .padding(.vertical, 5)
-        .background(Cozy.blush, in: .capsule)
+        .background(look.palette.blush, in: .capsule)
         .ink()
     }
 }
@@ -82,16 +83,17 @@ private struct DayLabel: View {
 private struct HistoryRow: View {
     var event: PointEvent
     var connection: Connection
+    @Environment(\.look) private var look
 
     private var received: Bool { event.from == connection.side.other }
-    private var partnerRole: Role { connection.partnerRole ?? connection.myRole.opposite }
+    private var partnerRole: Role { connection.resolvedPartnerRole }
     /// Whose points these are: the bubble wears their colours.
     private var receiverRole: Role { received ? connection.myRole : partnerRole }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             if received {
-                MascotSticker(face: partnerRole.emoji, size: 34)
+                MascotSticker(face: connection.partnerMascot, size: 34)
                 bubble
                 Spacer(minLength: 44)
             } else {
@@ -107,8 +109,8 @@ private struct HistoryRow: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(verbatim: PushText.signed(event.delta))
-                    .font(.system(.title3, design: .rounded, weight: .heavy))
-                    .foregroundStyle(received ? AnyShapeStyle(receiverRole.tint) : AnyShapeStyle(.white))
+                    .cozyFont(.title3, weight: .heavy)
+                    .foregroundStyle(received ? AnyShapeStyle(look.tint(for: receiverRole)) : AnyShapeStyle(.white))
                 Text(verbatim: event.delta > 0 ? "💕" : "💔")
                     .font(.subheadline)
             }
@@ -116,11 +118,11 @@ private struct HistoryRow: View {
             .padding(.trailing, 64)
             if !event.comment.isEmpty {
                 Text(verbatim: event.comment)
-                    .font(.system(.body, design: .rounded))
+                    .cozyFont(.body)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .foregroundStyle(received ? AnyShapeStyle(Cozy.ink) : AnyShapeStyle(.white))
+        .foregroundStyle(received ? AnyShapeStyle(look.palette.ink) : AnyShapeStyle(.white))
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .overlay(alignment: .topTrailing) {
@@ -130,8 +132,8 @@ private struct HistoryRow: View {
                 }
                 Text(event.createdAt, format: .dateTime.hour().minute())
             }
-            .font(.caption2.weight(.semibold))
-            .foregroundStyle(received ? AnyShapeStyle(Cozy.ink) : AnyShapeStyle(.white))
+            .cozyFont(.caption2, weight: .semibold)
+            .foregroundStyle(received ? AnyShapeStyle(look.palette.ink) : AnyShapeStyle(.white))
             .opacity(0.7)
             .padding(.top, 15)
             .padding(.trailing, 14)
@@ -144,9 +146,9 @@ private struct HistoryRow: View {
                 topTrailingRadius: 22
             )
             if received {
-                shape.fill(Cozy.card).shadow(color: Cozy.shadow, radius: 8, y: 3)
+                shape.fill(look.palette.card).shadow(color: look.palette.shadow, radius: 8, y: 3)
             } else {
-                shape.fill(receiverRole.gradient).shadow(color: Cozy.shadow.opacity(1.4), radius: 8, y: 3)
+                shape.fill(look.gradient(for: receiverRole)).shadow(color: look.palette.shadow.opacity(1.4), radius: 8, y: 3)
             }
         }
     }

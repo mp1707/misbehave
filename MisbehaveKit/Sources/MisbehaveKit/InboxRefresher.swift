@@ -64,6 +64,9 @@ public actor InboxRefresher {
                     zone.partnerName = profile.name
                     zone.partnerRole = profile.role
                 }
+                if let style = CloudSchema.style(from: record), style.updatedAt > zone.style?.updatedAt ?? .distantPast {
+                    zone.style = style
+                }
             }
             zone.changeToken = fetched.token
             inbox.zones[connection.id] = zone

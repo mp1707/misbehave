@@ -323,6 +323,33 @@ final class AppModel {
         }
     }
 
+    // MARK: Looks
+
+    /// Changes the look both partners share. It reaches the partner's app, widget and notifications.
+    func updateStyle(of id: String, _ change: (inout ConnectionStyle) -> Void) {
+        let queued: Connection? = mutate { state in
+            guard let index = state.connections.firstIndex(where: { $0.id == id }) else { return nil }
+            var style = state.connections[index].style ?? ConnectionStyle()
+            change(&style)
+            style.updatedAt = .now
+            state.connections[index].style = style
+            guard !state.connections[index].isDemo else { return nil }
+            state.connections[index].styleUnsent = true
+            return state.connections[index]
+        }
+        if let queued { sync.queueStyle(of: queued) }
+    }
+
+    /// The app's own look; the app icon follows its colours.
+    func updateAppLook(_ change: (inout Look) -> Void) {
+        let before = state.look.palette
+        mutate { change(&$0.look) }
+        guard state.look.palette != before else { return }
+        let icon = AppIcons.name(for: state.look.palette)
+        guard UIApplication.shared.supportsAlternateIcons, UIApplication.shared.alternateIconName != icon else { return }
+        UIApplication.shared.setAlternateIconName(icon) { _ in }
+    }
+
     func dismissNotice(_ notice: EndedNotice) {
         mutate { $0.notices.removeAll { $0.id == notice.id } }
     }
@@ -367,14 +394,16 @@ final class AppModel {
                 partnerName: demo.partnerDisplayName,
                 role: demo.myRole,
                 delta: delta,
-                comments: deltas.map(Self.demoComment(for:))
+                comments: deltas.map(Self.demoComment(for:)),
+                mascot: demo.myMascot,
+                look: demo.look
             )
             guard let text = PushText.content(for: [summary]) else { return }
             let content = UNMutableNotificationContent()
             content.title = text.title ?? demo.partnerDisplayName
             content.body = text.body
             content.sound = .default
-            if let sticker = NotificationSticker.attachment(role: demo.myRole, delta: delta) {
+            if let sticker = NotificationSticker.attachment(for: summary) {
                 content.attachments = [sticker]
             }
             content.userInfo = [AppConfig.connectionUserInfoKey: demo.id]
@@ -460,7 +489,7 @@ final class AppModel {
         content.threadIdentifier = Self.pointsNotificationID
         if summaries.count == 1 {
             content.userInfo = [AppConfig.connectionUserInfoKey: summaries[0].connectionID]
-            if let sticker = NotificationSticker.attachment(role: summaries[0].role, delta: summaries[0].delta) {
+            if let sticker = NotificationSticker.attachment(for: summaries[0]) {
                 content.attachments = [sticker]
             }
         }
@@ -534,6 +563,13 @@ final class AppModel {
                         state.connections[index].partnerName = profile.name.isEmpty ? nil : profile.name
                         state.connections[index].phase = .active
                         state.connections[index].inviteURL = nil
+                    }
+                } else if let style = CloudSchema.style(from: record) {
+                    state.connections[index].styleSystemFields = CloudSchema.encodeSystemFields(of: record)
+                    let local = state.connections[index].style
+                    if !state.connections[index].styleUnsent || style.updatedAt >= local?.updatedAt ?? .distantPast {
+                        state.connections[index].style = style
+                        state.connections[index].styleUnsent = false
                     }
                 } else if let share = record as? CKShare, side == .owner {
                     let others = share.participants.filter { $0.role != .owner }
@@ -651,6 +687,35 @@ final class AppModel {
         }
     }
 
+    /// The look reached CloudKit, or CloudKit has a different one (`server`).
+    /// Returns the connection if ours is newer and has to be sent again.
+    func styleSettled(_ record: CKRecord) -> Connection? {
+        mutate { state in
+            guard let index = state.connections.firstIndex(where: { $0.id == record.recordID.zoneID.zoneName }),
+                  let remote = CloudSchema.style(from: record) else { return nil }
+            state.connections[index].styleSystemFields = CloudSchema.encodeSystemFields(of: record)
+            let local = state.connections[index].style
+            if remote == local {
+                state.connections[index].styleUnsent = false
+                return nil
+            }
+            if state.connections[index].styleUnsent, let local, local.updatedAt > remote.updatedAt {
+                return state.connections[index]
+            }
+            state.connections[index].style = remote
+            state.connections[index].styleUnsent = false
+            return nil
+        }
+    }
+
+    func styleNeedsFreshRecord(_ recordID: CKRecord.ID) -> Connection? {
+        mutate { state in
+            guard let index = state.connections.firstIndex(where: { $0.id == recordID.zoneID.zoneName }) else { return nil }
+            state.connections[index].styleSystemFields = nil
+            return state.connections[index].styleUnsent ? state.connections[index] : nil
+        }
+    }
+
     /// The stored system fields no longer match a record on the server.
     func profileNeedsFreshRecord(_ recordID: CKRecord.ID) -> Connection? {
         mutate { state in
@@ -672,6 +737,10 @@ final class AppModel {
                 in: recordID.zoneID,
                 systemFields: connection.myProfileSystemFields
             )
+        }
+        if recordID.recordName == CloudSchema.styleRecordName {
+            guard let style = connection.style else { return nil }
+            return CloudSchema.styleRecord(style, in: recordID.zoneID, systemFields: connection.styleSystemFields)
         }
         guard let event = connection.events.first(where: { $0.id == recordID.recordName && $0.from == side }) else { return nil }
         return CloudSchema.pointRecord(event, in: recordID.zoneID, includingComment: !cloudRejectsComments)

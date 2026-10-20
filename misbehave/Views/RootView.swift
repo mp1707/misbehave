@@ -14,7 +14,7 @@ struct RootView: View {
                 HomeView()
             }
         }
-        .fontDesign(.rounded)
+        .themed(model.state.look)
         .animation(.default, value: model.state.profile == nil)
         .overlay {
             if model.isAcceptingInvite {
@@ -45,6 +45,7 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: Binding(get: { model.showsNotificationPrompt }, set: { _ in })) {
             NotificationPromptView()
+                .themed(model.state.look)
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             switch phase {
@@ -60,6 +61,7 @@ struct RootView: View {
 /// Explains in one screen why notifications matter here, then hands over to the system prompt.
 struct NotificationPromptView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.look) private var look
     @State private var isAsking = false
 
     private var role: Role { model.state.profile?.role ?? .goodgirl }
@@ -71,9 +73,9 @@ struct NotificationPromptView: View {
                 .padding(.bottom, 12)
             VStack(spacing: 20) {
                 Text("Don't miss the moment")
-                    .font(.largeTitle.weight(.heavy))
+                    .cozyFont(.largeTitle, weight: .heavy)
                 Text("When your partner gives you a point, your iPhone tells you right away and the widget follows. Without notifications you only see it when you open the app.")
-                    .font(.title3)
+                    .cozyFont(.title3)
                     .foregroundStyle(.secondary)
             }
             .multilineTextAlignment(.center)
@@ -91,12 +93,11 @@ struct NotificationPromptView: View {
             .buttonStyle(ProminentButtonStyle(role: role))
             .disabled(isAsking)
             Button("Later") { model.snoozeNotificationPrompt() }
-                .font(.headline)
+                .cozyFont(.headline, weight: .semibold)
                 .padding(.bottom, 8)
         }
         .padding(24)
         .background { CozyBackground() }
-        .fontDesign(.rounded)
         .interactiveDismissDisabled()
     }
 
@@ -106,11 +107,13 @@ struct NotificationPromptView: View {
             Text(verbatim: role.emoji)
                 .font(.system(size: 30))
                 .frame(width: 48, height: 48)
-                .background(role.gradient, in: .rect(cornerRadius: 13))
+                .background(look.gradient(for: role), in: .rect(cornerRadius: 13))
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: PushText.partnerFallback)
                     .font(.subheadline.weight(.bold))
                 Text(verbatim: PushText.phrase(delta: 1, role: role))
+                    .font(.footnote)
+                Text(verbatim: PushText.quoted(String(localized: "Thanks for the flowers 🥰")))
                     .font(.footnote)
             }
             Spacer(minLength: 0)
