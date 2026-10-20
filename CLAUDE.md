@@ -21,7 +21,7 @@ Marco writes in German; answer in German. Code, comments, commit messages and th
 - **At the end of a task, ask whether to upload a build** to App Store Connect so it is in TestFlight. Don't upload unasked.
 - **Check visual work in the simulator first** (or on the test device) instead of cutting a build per iteration. Look at the result yourself with a screenshot before reporting.
 - **Keep this file current.** When the concept, the release process or a hard-won fact changes, update it in the same commit. Keep it lean: only what a new session needs, no changelog, no narration.
-- Marco signs in to Apple sites himself; never enter credentials. Deploying a CloudKit schema to Production is his click (it is blocked for Claude).
+- Marco signs in to Apple sites himself; never enter credentials. Deploying a CloudKit schema to Production is his click (it is blocked for Claude). In a narrow browser pane the Console hides its sidebar; "Deploy Schema Changes…" is then under the Menu view.
 
 ## Architecture
 
@@ -137,7 +137,6 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 
 ## Open
 
-- The `comment` field on `PointFromOwner` and `PointFromParticipant` exists in Development (added 2026-10-20) but must still be deployed to Production. Until then TestFlight points arrive without their note.
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.
 - Never exercised on real devices: the owner detecting that the partner left (read from the share's participant list), "delete all data" against iCloud, account switch.
