@@ -100,7 +100,8 @@ final class SyncCoordinator: CKSyncEngineDelegate {
 
     func fetchNow() {
         for engine in engines.values {
-            Task { try? await engine.fetchChanges() }
+            // Detached: this may run inside a delegate callback, and the engine traps on recursion.
+            Task.detached { try? await engine.fetchChanges() }
         }
     }
 
@@ -111,11 +112,12 @@ final class SyncCoordinator: CKSyncEngineDelegate {
         }
     }
 
-    /// Several quick taps go out in one request.
+    /// Several quick taps go out in one request. Detached because it is also called from delegate
+    /// callbacks (retries), and a task inheriting their context makes the engine trap on recursion.
     private func scheduleSend(_ side: Side) {
         guard let engine = engines[side] else { return }
         sendTasks[side]?.cancel()
-        sendTasks[side] = Task {
+        sendTasks[side] = Task.detached {
             try? await Task.sleep(for: .milliseconds(400))
             guard !Task.isCancelled else { return }
             try? await engine.sendChanges()

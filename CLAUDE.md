@@ -105,7 +105,7 @@ xcodebuild -project misbehave.xcodeproj -scheme misbehave \
 
 App Store Connect app ID `6821730863`, team `PP2LXGF5L3`. Uploads work from the command line through the Apple ID signed in to Xcode; no API key.
 
-1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **7**.
+1. Raise `CURRENT_PROJECT_VERSION` in `project.pbxproj` (two places, project level). Currently **8**.
 2. Archive and upload (use a temp directory for the outputs):
 
 ```bash
@@ -132,6 +132,7 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 - One-time links need the entitlement `com.apple.developer.icloud-extended-share-access` = `[InProcessOneTimeLinks]`. Without it CloudKit traps in `CKShare.addParticipant` instead of throwing.
 - The Swift name `oneTimeURL(for:)` is marked iOS 26 in the SDK; the code calls `__oneTimeURL(forParticipantID:)`, available since iOS 18.
 - When CloudKit crashes or misbehaves without an error, run the steps one by one from a debug build on the connected iPhone and print each result (`xcrun devicectl device process launch --console …`); crash logs can be pulled with `devicectl device copy from --domain-type systemCrashLogs`.
+- Never call `CKSyncEngine.sendChanges`/`fetchChanges` from a plain `Task` started inside a delegate callback: the task inherits the callback's context and the engine traps (`…cannot_guarantee_serial_delegate_callbacks…`). Use `Task.detached`.
 - The demo connection is local only and mirrors every tap; it exists so the app and its notification can be tried alone (also for App Review).
 
 ## Open
