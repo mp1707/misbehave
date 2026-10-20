@@ -142,7 +142,7 @@ xcodebuild -exportArchive -archivePath "$TMP/misbehave.xcarchive" \
 
 ## Open
 
-- `ConnectionStyle` (field `payload`, String) exists in Development since 2026-10-20 and must be deployed to Production. Until then looks stay on each device (Diagnose shows the error) and the partner does not see them.
+- Not yet seen on two real iPhones: a look changed on one phone reaching the other, its widget and the notification picture.
 
 
 - Not yet seen on a real iPhone: the mascot picture next to the notification text.
