@@ -205,28 +205,19 @@ struct ScoreWidgetView: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: PushText.points(score.score, role: score.role)))
             case .accessoryRectangular:
-                HStack(spacing: 8) {
-                    Image(systemName: score.role.symbolName)
-                        .font(.system(size: 22, weight: .semibold))
-                        .frame(width: 26)
+                // Just how many you have: "2 goodgirl points".
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(score.score, format: .number)
+                        .font(look.font(size: 32, weight: .heavy))
                         .widgetAccentable()
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(verbatim: score.partner)
-                            .font(look.font(.headline, weight: .semibold))
-                            .lineLimit(1)
-                            .widgetAccentable()
-                        Text(verbatim: PushText.points(score.score, role: score.role))
-                            .font(look.font(.body, weight: .semibold))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
-                        if let note = score.note {
-                            Text(verbatim: PushText.quoted(note))
-                                .font(look.font(.caption))
-                                .lineLimit(1)
-                        }
-                    }
+                    Text(verbatim: PushText.pointsLabel(count: score.score, role: score.role))
+                        .font(look.font(.headline, weight: .semibold))
                 }
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(verbatim: PushText.points(score.score, role: score.role)))
             case .systemMedium:
                 VStack(spacing: 6) {
                     HStack(spacing: 4) {
@@ -385,7 +376,5 @@ struct MisbehaveWidgetBundle: WidgetBundle {
         ScoreWidget()
         DuoWidget()
         NoteWidget()
-        GivePointControl()
-        TakePointControl()
     }
 }

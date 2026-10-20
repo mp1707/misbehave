@@ -5,11 +5,6 @@ import SwiftUI
 import UserNotifications
 import WidgetKit
 
-struct PendingPoint: Equatable {
-    var connectionID: String
-    var delta: Int
-}
-
 struct AppAlert: Identifiable {
     let id = UUID()
     var title: String
@@ -29,8 +24,6 @@ final class AppModel {
 
     private(set) var state: StoreState
     var path: [String] = []
-    /// A point a lock screen control asked for; the connection page opens its note sheet and clears it.
-    var pendingPoint: PendingPoint?
     var alert: AppAlert?
     private(set) var accountStatus: CKAccountStatus = .couldNotDetermine
     private(set) var notificationStatus: UNAuthorizationStatus = .notDetermined
@@ -170,11 +163,7 @@ final class AppModel {
     }
 
     func open(url: URL) {
-        guard let id = AppConfig.connectionID(from: url), connection(id) != nil else { return }
-        open(connectionID: id)
-        if let delta = AppConfig.pointRequest(from: url) {
-            pendingPoint = PendingPoint(connectionID: id, delta: delta)
-        }
+        if let id = AppConfig.connectionID(from: url) { open(connectionID: id) }
     }
 
     func refreshAccountStatus() async {
